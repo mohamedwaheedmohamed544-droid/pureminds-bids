@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بيورمايندز — نظام المناقصات</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0c10;--surface:#111318;--surface2:#181c24;--border:#1e2330;
+  --accent:#c9a84c;--accent2:#e8c97a;--text:#eef0f5;--muted:#6b7280;
+  --danger:#ef4444;--success:#22c55e;--info:#3b82f6;--warning:#f59e0b;--purple:#a855f7;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;font-size:14px;direction:rtl;}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-main{height:26px;width:auto;filter:brightness(1.1);}
+.logo-secondary{height:20px;width:auto;opacity:0.6;filter:brightness(2);}
+.logo-divider{width:1px;height:26px;background:var(--border);margin:0 4px;}
+.logo-sub{font-size:11px;color:var(--accent);font-weight:700;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:7px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0c10;}
+.btn-primary:hover{opacity:.9;}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-success{background:transparent;color:var(--success);border:1px solid var(--success);}
+.btn-success:hover{background:var(--success);color:#fff;}
+.btn-info{background:transparent;color:var(--info);border:1px solid var(--info);}
+.btn-info:hover{background:var(--info);color:#fff;}
+.btn-purple{background:transparent;color:var(--purple);border:1px solid var(--purple);}
+.btn-purple:hover{background:var(--purple);color:#fff;}
+.btn-sm{padding:5px 10px;font-size:11px;}
+.stats-bar{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.stat-card{background:var(--surface);padding:14px 18px;display:flex;flex-direction:column;gap:2px;}
+.stat-label{font-size:10px;color:var(--muted);font-weight:700;}
+.stat-value{font-size:20px;font-weight:800;}
+.stat-sub{font-size:10px;color:var(--muted);}
+.nav-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface);padding:0 24px;overflow-x:auto;}
+.nav-tab{padding:12px 18px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;}
+.nav-tab.active{color:var(--accent2);border-bottom-color:var(--accent2);}
+.main{padding:18px 24px;display:flex;flex-direction:column;gap:14px;}
+.tab-content{display:none;} .tab-content.active{display:flex;flex-direction:column;gap:14px;}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.search-box{flex:1;min-width:180px;position:relative;}
+.search-box input{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 32px 8px 10px;border-radius:7px;font-family:'Cairo',sans-serif;font-size:13px;outline:none;}
+.search-box input:focus{border-color:var(--accent);}
+.search-box input::placeholder{color:var(--muted);}
+.search-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--muted);}
+.filter-select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:7px;font-family:'Cairo',sans-serif;font-size:12px;outline:none;cursor:pointer;}
+.stage-tabs{display:flex;gap:5px;flex-wrap:wrap;}
+.stage-tab{padding:4px 12px;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid transparent;background:var(--surface2);color:var(--muted);font-family:'Cairo',sans-serif;}
+.stage-tab.active{border-color:currentColor;}
+.reminder-banner{background:#1a1000;border:1px solid #f59e0b44;border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.reminder-banner.urgent{background:#1a0000;border-color:#ef444444;}
+.reminder-text{font-size:12px;font-weight:600;flex:1;}
+.reminder-count{border-radius:16px;padding:2px 8px;font-size:10px;font-weight:800;background:var(--warning);color:#000;}
+.reminder-count.red{background:var(--danger);color:#fff;}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:950px;}
+thead tr{background:var(--surface2);border-bottom:1px solid var(--border);}
+th{padding:10px 12px;text-align:right;font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--surface2);}
+td{padding:11px 12px;vertical-align:middle;}
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;white-space:nowrap;}
+.badge-sub{background:#1a1f2e;color:#93c5fd;border:1px solid #1e3a5f;}
+.badge-type{background:#1a1a2e;color:#c084fc;border:1px solid #3b1f5f;}
+.badge-req{background:#0f2a1a;color:#4ade80;border:1px solid #14532d;cursor:pointer;}
+.stage-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:16px;font-size:10px;font-weight:700;white-space:nowrap;}
+.stage-dot{width:5px;height:5px;border-radius:50%;}
+.progress-bar{width:70px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:2px;}
+.actions-cell{display:flex;gap:4px;}
+.icon-btn{width:26px;height:26px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s;}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);}
+.icon-btn.del:hover{border-color:var(--danger);color:var(--danger);}
+.empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(4px);}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;width:100%;max-width:780px;max-height:93vh;overflow-y:auto;transform:translateY(20px);transition:transform .2s;}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-header{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:10;}
+.modal-title{font-size:16px;font-weight:800;}
+.modal-close{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{border-color:var(--danger);color:var(--danger);}
+.modal-body{padding:20px 22px;display:flex;flex-direction:column;gap:16px;}
+.msec{font-size:11px;font-weight:800;color:var(--accent);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:2px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.fg{display:flex;flex-direction:column;gap:5px;}
+label{font-size:11px;font-weight:700;color:var(--muted);}
+input[type="text"],input[type="number"],input[type="date"],input[type="url"],textarea,select{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:7px;font-family:'Cairo',sans-serif;font-size:13px;outline:none;width:100%;text-align:right;}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);}
+input::placeholder,textarea::placeholder{color:var(--muted);}
+textarea{resize:vertical;min-height:60px;}
+select option{background:var(--surface2);}
+.stage-sel{display:flex;flex-wrap:wrap;gap:5px;}
+.stage-opt{padding:4px 11px;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-family:'Cairo',sans-serif;}
+.stage-opt.selected{border-color:currentColor;}
+.modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:8px;}
+.bid-modal-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 22px;background:var(--surface2);overflow-x:auto;}
+.bid-modal-tab{padding:10px 16px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
+.bid-modal-tab.active{color:var(--accent2);border-bottom-color:var(--accent2);}
+.bid-tab-content{display:none;padding:20px 22px;}
+.bid-tab-content.active{display:block;}
+.req-upload{border:2px dashed var(--border);border-radius:10px;padding:24px;text-align:center;cursor:pointer;position:relative;}
+.req-upload:hover{border-color:var(--accent);}
+.req-upload input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.ai-proc{background:var(--surface2);border:1px solid var(--accent);border-radius:10px;padding:14px;display:none;align-items:center;gap:12px;}
+.ai-proc.show{display:flex;}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.req-list{display:flex;flex-direction:column;gap:7px;}
+.req-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 13px;display:flex;gap:10px;align-items:flex-start;}
+.req-check{width:16px;height:16px;cursor:pointer;flex-shrink:0;margin-top:2px;accent-color:var(--accent);}
+.req-content{flex:1;}
+.req-input{background:transparent;border:none;color:var(--text);font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;width:100%;outline:none;}
+.req-meta{display:flex;gap:7px;margin-top:5px;flex-wrap:wrap;align-items:center;}
+.req-cat{padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;}
+.req-num{background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:11px;padding:2px 6px;border-radius:4px;width:60px;outline:none;text-align:center;}
+.req-sel{background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:11px;padding:2px 5px;border-radius:4px;outline:none;}
+.req-del{width:20px;height:20px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:11px;flex-shrink:0;}
+.req-del:hover{color:var(--danger);}
+.add-row{border:1px dashed var(--border);border-radius:8px;padding:9px;text-align:center;cursor:pointer;color:var(--muted);font-size:12px;font-weight:600;}
+.add-row:hover{border-color:var(--accent);color:var(--accent);}
+.offer-hdr{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.offer-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;}
+.offer-tbl{width:100%;border-collapse:collapse;min-width:600px;}
+.offer-tbl th{background:var(--surface2);padding:9px 11px;text-align:right;font-size:11px;font-weight:700;color:var(--accent2);border-bottom:1px solid var(--border);}
+.offer-tbl td{padding:7px 10px;border-bottom:1px solid var(--border);}
+.offer-tbl tbody tr:last-child td{border-bottom:none;}
+.offer-inp{background:transparent;border:none;color:var(--text);font-family:'Cairo',sans-serif;font-size:12px;width:100%;outline:none;text-align:right;}
+.offer-inp:focus{background:var(--surface2);border-radius:3px;padding:2px 4px;}
+.tot-row td{background:var(--surface2);font-weight:700;color:var(--accent2);}
+.vat-row td{background:rgba(34,197,94,.06);font-weight:700;color:var(--success);}
+.grand-row td{background:rgba(201,168,76,.1);font-weight:800;font-size:14px;color:var(--accent2);}
+.disc-row td{color:var(--danger);font-weight:700;}
+.vat-tog{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;}
+/* KRASSAT UPLOAD IN ADD MODAL */
+.krassat-zone{border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;position:relative;transition:all .2s;background:rgba(201,168,76,.03);}
+.krassat-zone:hover,.krassat-zone.drag{border-color:var(--accent);background:rgba(201,168,76,.07);}
+.krassat-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.krassat-zone.has-file{border-color:var(--success);background:rgba(34,197,94,.06);}
+.krassat-proc{background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(201,168,76,.1));border:1px solid var(--accent)55;border-radius:12px;padding:16px;display:none;flex-direction:column;gap:10px;}
+.krassat-proc.show{display:flex;}
+.krassat-prog-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.krassat-prog-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--purple),var(--accent));transition:width .4s ease;}
+.krassat-result{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;display:none;flex-direction:column;gap:10px;}
+.krassat-result.show{display:flex;}
+.extracted-field{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);}
+.extracted-field:last-child{border-bottom:none;}
+.extracted-label{font-size:10px;font-weight:800;color:var(--accent);min-width:110px;padding-top:2px;}
+.extracted-value{font-size:12px;color:var(--text);flex:1;font-weight:600;}
+.fill-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0c10;border:none;padding:8px 16px;border-radius:7px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:800;cursor:pointer;width:100%;}
+.win-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.win-hdr{padding:20px 22px;display:flex;align-items:center;gap:18px;border-bottom:1px solid var(--border);}
+.win-circle{position:relative;width:90px;height:90px;flex-shrink:0;}
+.win-circle svg{transform:rotate(-90deg);}
+.win-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.win-factors{padding:16px 22px;display:flex;flex-direction:column;gap:11px;}
+.wf-item{display:flex;flex-direction:column;gap:4px;}
+.wf-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.wf-fill{height:100%;border-radius:3px;transition:width .5s;}
+.win-insights{padding:0 22px 16px;display:flex;flex-direction:column;gap:7px;}
+.insight{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:7px;font-size:12px;}
+.insight.str{background:#0f2a1a;border:1px solid #14532d;color:#4ade80;}
+.insight.wk{background:#1a0a0a;border:1px solid #7f1d1d;color:#fca5a5;}
+.insight.tip{background:#0a1a2a;border:1px solid #1e3a5f;color:#93c5fd;}
+.report-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.report-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;}
+.report-card-title{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:14px;}
+.rrow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.rrow:last-child{border-bottom:none;}
+.lbar-row{display:flex;align-items:center;gap:8px;font-size:11px;margin-bottom:7px;}
+.lbar-label{width:110px;color:var(--muted);text-align:right;}
+.lbar-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.lbar-fill{height:100%;border-radius:3px;background:var(--danger);}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);color:#fff;padding:10px 20px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:700;font-size:13px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4);}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+@media(max-width:768px){
+  .stats-bar{grid-template-columns:repeat(3,1fr);}
+  .main{padding:12px;}
+  header{padding:0 12px;}
+  .form-row,.form-row-3,.offer-hdr{grid-template-columns:1fr;}
+  .report-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">
+    <img class="logo-main" id="logoMain" alt="pureminds">
+    <img class="logo-secondary" id="logoSec" alt="pureminds">
+    <div class="logo-divider"></div>
+    <div class="logo-sub">نظام المناقصات المتكامل</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV()">⬇ تصدير CSV</button>
+    <button class="btn btn-ghost btn-sm" onclick="dlTemplate()" title="تنزيل قالب Excel جاهز للتعبئة">📥 قالب Excel</button>
+    <button class="btn btn-success btn-sm" onclick="openImportModal()">📊 استيراد Excel</button>
+    <button class="btn btn-primary" onclick="openAddModal()">＋ إضافة مناقصة</button>
+  </div>
+</header>
+
+<div class="stats-bar" id="statsBar"></div>
+
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="switchTab('bids',this)">📋 المناقصات</div>
+  <div class="nav-tab" onclick="switchTab('reports',this)">📊 التقارير</div>
+  <div class="nav-tab" onclick="switchTab('reminders',this)">🔔 التذكيرات <span id="remBadge"></span></div>
+</div>
+
+<div class="main">
+  <div class="tab-content active" id="tab-bids">
+    <div id="remArea"></div>
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="ابحث بالاسم، العميل، الرقم..." id="srch" oninput="renderTable()">
+      </div>
+      <select class="filter-select" id="fSub" onchange="renderTable()">
+        <option value="">كل الشركات</option>
+        <option>GlobalMind</option><option>Peacock</option><option>WORDUP</option>
+        <option>LtsThink</option><option>Deep Vision</option><option>KEES</option>
+        <option>بيورمايندز (المجموعة)</option>
+      </select>
+      <select class="filter-select" id="fType" onchange="renderTable()">
+        <option value="">كل الأنواع</option>
+        <option>منافسة عامة</option><option>منافسة محدودة</option>
+        <option>شراء مباشر</option><option>اتفاقية إطارية</option>
+      </select>
+      <select class="filter-select" id="fSort" onchange="renderTable()">
+        <option value="deadline">الموعد النهائي</option>
+        <option value="vd">القيمة (الأعلى)</option>
+        <option value="va">القيمة (الأدنى)</option>
+        <option value="new">الأحدث</option>
+      </select>
+    </div>
+    <div class="stage-tabs" id="stageTabs"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>رقم المناقصة</th><th>الاسم والعميل</th><th>النوع / الشركة</th>
+          <th>المرحلة</th><th>القيمة</th><th>الموعد</th>
+          <th>المتطلبات</th><th>الاحتمالية</th><th>إجراءات</th>
+        </tr></thead>
+        <tbody id="tBody"></tbody>
+      </table>
+      <div id="emptyState" class="empty-state" style="display:none">
+        <div style="font-size:36px;margin-bottom:10px">📋</div>
+        <p>لا توجد مناقصات. ابدأ بإضافة مناقصة.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" id="tab-reports"><div class="report-grid" id="rptContent"></div></div>
+  <div class="tab-content" id="tab-reminders"><div id="remContent"></div></div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="mTitle">إضافة مناقصة</div>
+      <button class="modal-close" onclick="closeModal('addModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- KRASSAT UPLOAD SECTION -->
+      <div>
+        <div class="msec">🤖 استخراج البيانات من كراسة الشروط (اختياري)</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
+          <div class="krassat-zone" id="krassatZone">
+            <div style="font-size:28px;margin-bottom:6px" id="krassatIcon">📂</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text)" id="krassatTitle">ارفع كراسة الشروط هنا</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:3px" id="krassatSub">PDF أو Word — الذكاء الاصطناعي يستخرج البيانات ويملأ الحقول تلقائياً</div>
+            <input type="file" id="krassatFile" accept=".pdf,.doc,.docx" onchange="handleKrassatUpload(event)">
+          </div>
+          <div class="krassat-proc" id="krassatProc">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="spinner" style="flex-shrink:0"></div>
+              <div style="flex:1">
+                <div style="font-size:12px;font-weight:700" id="krassatStep">جاري تحليل الكراسة...</div>
+                <div class="krassat-prog-bar" style="margin-top:6px"><div class="krassat-prog-fill" id="krassatProg" style="width:0%"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="krassat-result" id="krassatResult">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+              <div style="font-size:12px;font-weight:800;color:var(--success)">✅ تم استخراج البيانات بنجاح</div>
+              <button onclick="clearKrassat()" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:11px">✕ مسح</button>
+            </div>
+            <div id="krassatPreview"></div>
+            <button class="fill-btn" onclick="fillFromKrassat()">⬇ ملء جميع الحقول تلقائياً</button>
+          </div>
+        </div>
+      </div>
+      <div><div class="msec">📌 معلومات المناقصة</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="fg"><label>اسم المناقصة *</label><input type="text" id="f_title" placeholder="مثال: خدمات الإنتاج الإعلامي"></div>
+          <div class="form-row">
+            <div class="fg"><label>رقم المناقصة</label><input type="text" id="f_tender" placeholder="2025-ETM-0042"></div>
+            <div class="fg"><label>رقم اللوت</label><input type="text" id="f_lot" placeholder="لوت 2"></div>
+          </div>
+          <div class="form-row">
+            <div class="fg"><label>العميل / الجهة</label><input type="text" id="f_client" placeholder="وزارة السياحة"></div>
+            <div class="fg"><label>الشركة المنفذة</label>
+              <select id="f_sub"><option>بيورمايندز (المجموعة)</option><option>GlobalMind</option><option>Peacock</option><option>WORDUP</option><option>LtsThink</option><option>Deep Vision</option><option>KEES</option></select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="fg"><label>المصدر</label>
+              <select id="f_src"><option>منصة اعتماد</option><option>طلب عروض مباشر</option><option>مناقصة دولية</option><option>اتفاقية إطارية</option><option>إحالة</option></select>
+            </div>
+            <div class="fg"><label>نوع المناقصة</label>
+              <select id="f_type"><option>منافسة عامة</option><option>منافسة محدودة</option><option>شراء مباشر</option><option>اتفاقية إطارية</option></select>
+            </div>
+          </div>
+          <div class="fg"><label>رابط اعتماد</label><input type="url" id="f_link" placeholder="https://etimad.sa/..."></div>
+        </div>
+      </div>
+      <div><div class="msec">💰 القيم المالية</div>
+        <div class="form-row">
+          <div class="fg"><label>قيمة المناقصة (ريال)</label><input type="number" id="f_val" placeholder="0"></div>
+          <div class="fg"><label>التأمين الابتدائي (ريال)</label><input type="number" id="f_bond" placeholder="0"></div>
+        </div>
+      </div>
+      <div><div class="msec">📅 التواريخ</div>
+        <div class="form-row-3">
+          <div class="fg"><label>تاريخ النشر</label><input type="date" id="f_pub"></div>
+          <div class="fg"><label>الموعد النهائي</label><input type="date" id="f_dl"></div>
+          <div class="fg"><label>فتح المظاريف</label><input type="date" id="f_open"></div>
+        </div>
+      </div>
+      <div><div class="msec">📊 التقييم</div>
+        <div class="form-row">
+          <div class="fg"><label>مدير تطوير الأعمال</label><input type="text" id="f_mgr" placeholder="اسمك"></div>
+          <div class="fg"><label>احتمالية الفوز (%)</label><input type="number" id="f_prob" placeholder="0–100" min="0" max="100"></div>
+        </div>
+        <div class="fg" style="margin-top:12px"><label>المنافسون المتوقعون</label><input type="text" id="f_comp" placeholder="شركة X، شركة Y"></div>
+      </div>
+      <div><div class="msec">🎯 المرحلة</div><div class="stage-sel" id="stageSel"></div></div>
+      <div id="lossGrp" style="display:none"><div class="msec">❌ سبب الخسارة</div>
+        <div class="form-row">
+          <div class="fg"><label>السبب</label>
+            <select id="f_loss"><option value="">اختر</option><option>السعر (عرضنا أعلى)</option><option>التقييم الفني</option><option>الخبرة المطلوبة</option><option>تأهل مسبق</option><option>منافس أقوى</option><option>إلغاء المناقصة</option><option>أخرى</option></select>
+          </div>
+          <div class="fg"><label>سعر الفائز (ريال)</label><input type="number" id="f_winp" placeholder="إن عُلم"></div>
+        </div>
+      </div>
+      <div><div class="msec">📝 الملاحظات</div>
+        <textarea id="f_notes" placeholder="استراتيجية العرض، ملاحظات، متطلبات خاصة..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveBid()">💾 حفظ</button>
+      <button class="btn btn-ghost" onclick="closeModal('addModal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXCEL IMPORT MODAL -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal" style="max-width:860px">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">📊 استيراد من Excel</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">ارفع ملف Excel يحتوي على بيانات المناقصات — يدعم .xlsx و .xls</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('importModal')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- STEP 1: UPLOAD -->
+      <div id="imp_step1">
+        <div class="msec">الخطوة 1 — رفع ملف Excel</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">
+          <!-- Upload zone -->
+          <div id="impZone" style="border:2px dashed var(--border);border-radius:12px;padding:30px;text-align:center;cursor:pointer;position:relative;transition:all .2s;background:rgba(34,197,94,.03)"
+               ondragover="event.preventDefault();this.style.borderColor='var(--success)'" 
+               ondragleave="this.style.borderColor='var(--border)'"
+               ondrop="handleExcelDrop(event)">
+            <div style="font-size:36px;margin-bottom:8px">📊</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text)">ارفع ملف Excel هنا</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px">.xlsx أو .xls — اسحب وأفلت أو اضغط للاختيار</div>
+            <input type="file" accept=".xlsx,.xls" onchange="handleExcelFile(event)"
+                   style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+          </div>
+          <!-- Template info -->
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px">
+            <div style="font-size:12px;font-weight:800;color:var(--accent)">💡 قالب Excel الموصى به</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.7">
+              للحصول على أفضل نتائج استخدم القالب الرسمي. الأعمدة المدعومة:
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div id="colMapList" style="font-size:10px;color:var(--muted)"></div>
+            </div>
+            <button class="btn btn-success btn-sm" onclick="dlTemplate()" style="margin-top:auto">
+              ⬇ تنزيل القالب الجاهز
+            </button>
+            <div style="font-size:10px;color:var(--muted);text-align:center">ثم عبّئه وارفعه هنا</div>
+          </div>
+        </div>
+
+        <!-- Processing indicator -->
+        <div id="impProc" style="display:none;background:var(--surface2);border:1px solid var(--accent)55;border-radius:10px;padding:14px;margin-top:12px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="spinner"></div>
+            <div>
+              <div style="font-size:12px;font-weight:700" id="impProcTxt">جاري قراءة الملف...</div>
+              <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:6px;width:300px">
+                <div id="impProgBar" style="height:100%;border-radius:2px;background:linear-gradient(90deg,var(--success),var(--accent));transition:width .3s;width:0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: PREVIEW & COLUMN MAPPING -->
+      <div id="imp_step2" style="display:none">
+        <div class="msec">الخطوة 2 — تعيين الأعمدة</div>
+        <div style="font-size:12px;color:var(--muted);margin:8px 0 12px">تأكد من تطابق أعمدة ملفك مع حقول النظام. البرنامج يحاول التعيين تلقائياً.</div>
+        <div id="colMapper" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+
+        <div class="msec" style="margin-top:16px">الخطوة 3 — معاينة البيانات</div>
+        <div style="font-size:12px;color:var(--muted);margin:8px 0 10px">
+          تم اكتشاف <strong id="impRowCount" style="color:var(--success)">0</strong> صف من البيانات.
+          البرنامج سيتحقق من البيانات ويتجاهل الصفوف الفارغة.
+        </div>
+        <div style="overflow-x:auto;border:1px solid var(--border);border-radius:8px;max-height:240px;overflow-y:auto">
+          <table style="width:100%;border-collapse:collapse;min-width:600px">
+            <thead id="impPreviewHead" style="background:var(--surface2);position:sticky;top:0"></thead>
+            <tbody id="impPreviewBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- STEP 3: IMPORT OPTIONS -->
+      <div id="imp_step3" style="display:none">
+        <div class="msec">خيارات الاستيراد</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+          <label style="display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer">
+            <input type="radio" name="impMode" value="add" checked style="accent-color:var(--accent)">
+            <div>
+              <div style="font-size:13px;font-weight:700">إضافة إلى المناقصات الموجودة</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">يضيف المناقصات الجديدة دون حذف الموجودة</div>
+            </div>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer">
+            <input type="radio" name="impMode" value="replace" style="accent-color:var(--accent)">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--warning)">استبدال جميع البيانات</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">⚠️ يحذف جميع المناقصات الحالية ويستبدلها بالمستوردة</div>
+            </div>
+          </label>
+        </div>
+        <div style="background:rgba(34,197,94,.08);border:1px solid var(--success)44;border-radius:8px;padding:12px;margin-top:10px;font-size:12px">
+          <div style="font-weight:700;color:var(--success);margin-bottom:4px">✅ جاهز للاستيراد</div>
+          <div style="color:var(--muted)" id="impReadySummary"></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" id="impBtn" onclick="doImport()" style="display:none">
+          ⬆ استيراد المناقصات
+        </button>
+        <button class="btn btn-ghost btn-sm" id="impResetBtn" onclick="resetImport()" style="display:none">
+          🔄 رفع ملف آخر
+        </button>
+      </div>
+      <button class="btn btn-ghost" onclick="closeModal('importModal')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- BID DETAIL MODAL -->
+<div class="modal-overlay" id="bidModal">
+  <div class="modal" style="max-width:1000px">
+    <div class="modal-header">
+      <div>
+        <div style="font-size:11px;color:var(--accent);font-weight:700" id="dm_num"></div>
+        <div class="modal-title" id="dm_title"></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span id="dm_stage"></span>
+        <button class="btn btn-ghost btn-sm" onclick="editFromDetail()">✏️ تعديل</button>
+        <button class="modal-close" onclick="closeModal('bidModal')">✕</button>
+      </div>
+    </div>
+    <div class="bid-modal-tabs">
+      <div class="bid-modal-tab active" onclick="switchBidTab('ov',this)">📋 نظرة عامة</div>
+      <div class="bid-modal-tab" onclick="switchBidTab('req',this)">📄 المتطلبات والكراسة</div>
+      <div class="bid-modal-tab" onclick="switchBidTab('fin',this)">💰 العرض المالي</div>
+      <div class="bid-modal-tab" onclick="switchBidTab('win',this)">🎯 تحليل الاحتمالية</div>
+    </div>
+    <!-- OVERVIEW -->
+    <div class="bid-tab-content active" id="btab-ov"><div id="ovContent"></div></div>
+    <!-- REQUIREMENTS -->
+    <div class="bid-tab-content" id="btab-req">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="req-upload" id="reqUpload">
+          <div style="font-size:28px;margin-bottom:6px">📂</div>
+          <div style="font-size:13px;font-weight:600">ارفع كراسة الشروط هنا</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">PDF أو Word — الذكاء الاصطناعي يستخرج المتطلبات تلقائياً</div>
+          <input type="file" accept=".pdf,.doc,.docx" onchange="handleFile(event)">
+        </div>
+        <div class="ai-proc" id="aiProc">
+          <div class="spinner"></div>
+          <div>
+            <div style="font-weight:700;font-size:13px">الذكاء الاصطناعي يحلل الكراسة...</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px" id="aiTxt">جاري استخراج البنود...</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:13px;font-weight:700">📋 قائمة المتطلبات <span id="reqCnt" style="color:var(--muted);font-size:12px"></span></div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm" onclick="addReq()">＋ يدوي</button>
+            <button class="btn btn-success btn-sm" onclick="saveReqs()">💾 حفظ</button>
+            <button class="btn btn-info btn-sm" onclick="toFinancial()">💰 للعرض المالي</button>
+          </div>
+        </div>
+        <div class="req-list" id="reqList"></div>
+      </div>
+    </div>
+    <!-- FINANCIAL -->
+    <div class="bid-tab-content" id="btab-fin">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="offer-hdr">
+          <div class="fg"><label>اسم الشركة</label><input type="text" id="of_co" value="بيورمايندز للإنتاج الإعلامي المرئي والمسموع"></div>
+          <div class="fg"><label>رقم العرض</label><input type="text" id="of_ref" placeholder="PM-2025-001"></div>
+          <div class="fg"><label>تاريخ العرض</label><input type="date" id="of_dt"></div>
+          <div class="fg"><label>مقدَّم إلى</label><input type="text" id="of_to"></div>
+          <div class="fg"><label>صالح لمدة</label><input type="text" id="of_val" value="30 يوماً"></div>
+          <div class="fg"><label>ملاحظات</label><input type="text" id="of_note" placeholder="أي شروط"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" onclick="addOfferRow()">＋ بند</button>
+            <label class="vat-tog"><input type="checkbox" id="vatCk" checked onchange="calcOffer()"> ضريبة 15%</label>
+            <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)">
+              خصم: <input type="number" id="discPct" value="0" min="0" max="100" style="width:48px;padding:3px 6px;font-size:12px" onchange="calcOffer()"> %
+            </div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-success btn-sm" onclick="saveOffer()">💾 حفظ</button>
+            <button class="btn btn-primary btn-sm" onclick="printOffer()">🖨️ طباعة</button>
+          </div>
+        </div>
+        <div class="offer-wrap">
+          <table class="offer-tbl">
+            <thead><tr>
+              <th style="width:32px">#</th><th>وصف البند</th>
+              <th style="width:70px">الكمية</th><th style="width:75px">الوحدة</th>
+              <th style="width:115px">سعر الوحدة</th><th style="width:125px">الإجمالي</th>
+              <th style="width:30px"></th>
+            </tr></thead>
+            <tbody id="offerBody"></tbody>
+            <tfoot id="offerFoot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- WIN ANALYSIS -->
+    <div class="bid-tab-content" id="btab-win">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="win-card" id="winCard"></div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px">
+          <div style="font-size:12px;font-weight:800;color:var(--accent);margin-bottom:12px">⚙️ معطيات التقييم</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="fg"><label>قوة المنافسين</label>
+              <select id="wp_comp"><option value="1">1 — ضعفاء</option><option value="2">2 — متوسطون</option><option value="3" selected>3 — أقوياء</option><option value="4">4 — أقوياء جداً</option><option value="5">5 — لا يُنافَسون</option></select>
+            </div>
+            <div class="fg"><label>علاقتنا بالعميل</label>
+              <select id="wp_rel"><option value="1">لا علاقة</option><option value="2">محدودة</option><option value="3" selected>جيدة</option><option value="4">قوية</option><option value="5">شراكة استراتيجية</option></select>
+            </div>
+            <div class="fg"><label>توافق خبرتنا مع المتطلبات</label>
+              <select id="wp_exp"><option value="1">ضعيف جداً</option><option value="2">جزئي</option><option value="3" selected>جيد</option><option value="4">عالي</option><option value="5">مثالي 100%</option></select>
+            </div>
+            <div class="fg"><label>تنافسية السعر</label>
+              <select id="wp_price"><option value="1">مرتفع جداً</option><option value="2">أعلى من السوق</option><option value="3" selected>تنافسي</option><option value="4">أقل من السوق</option><option value="5">الأقل سعراً</option></select>
+            </div>
+            <div class="fg"><label>استيفاء المتطلبات الفنية</label>
+              <select id="wp_tech"><option value="1">أقل من 40%</option><option value="2">40–60%</option><option value="3" selected>60–80%</option><option value="4">80–95%</option><option value="5">100%</option></select>
+            </div>
+            <div class="fg"><label>جودة العرض الفني</label>
+              <select id="wp_prop"><option value="1">لم يُعدّ</option><option value="2">مسودة</option><option value="3" selected>جيد</option><option value="4">قوي</option><option value="5">استثنائي</option></select>
+            </div>
+          </div>
+          <div class="fg" style="margin-top:12px"><label>ملاحظات للتحليل (اختياري)</label>
+            <textarea id="wp_notes" placeholder="معلومات إضافية تساعد الذكاء الاصطناعي في التحليل..." style="min-height:50px"></textarea>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="btn btn-purple btn-sm" onclick="runAI()">🤖 تحليل AI الكامل</button>
+            <button class="btn btn-ghost btn-sm" onclick="quickScore()">⚡ تقييم سريع</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STAGES=['جديدة','دراسة','تحضير','مقدمة','قيد المراجعة','رُسّينا','خسرنا','ملغاة'];
+const SC={'جديدة':'#3b82f6','دراسة':'#8b5cf6','تحضير':'#f59e0b','مقدمة':'#06b6d4','قيد المراجعة':'#f97316','رُسّينا':'#22c55e','خسرنا':'#ef4444','ملغاة':'#6b7280'};
+const SI={'جديدة':'🆕','دراسة':'📖','تحضير':'⚙️','مقدمة':'📤','قيد المراجعة':'🔍','رُسّينا':'🏆','خسرنا':'❌','ملغاة':'🚫'};
+const TERM=['رُسّينا','خسرنا','ملغاة'];
+const CATS=[{n:'إنتاج',c:'#3b82f6'},{n:'تصميم',c:'#8b5cf6'},{n:'فعاليات',c:'#f59e0b'},{n:'طباعة',c:'#06b6d4'},{n:'تقني',c:'#f97316'},{n:'إداري',c:'#6b7280'},{n:'أخرى',c:'#a855f7'}];
+const UNITS=['وحدة','ساعة','يوم','شهر','متر','م²','قطعة','مجموعة','باقة','مشروع'];
+
+let bids=[];
+try{bids=JSON.parse(localStorage.getItem('pm_v5')||'[]');}catch(e){bids=[];}
+let activeStage='all',editId=null,curId=null;
+
+// Load logos
+(function(){
+  const L1='/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCADhAOEDASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAgJBAUDBgcBAv/EAD8QAAEDBAECAwQGBwYHAAAAAAABAgMEBQYRBxIhCBMxIkFRYQkUFTJ1gRcjJzNicbM1NjhCRXJ0kZWipbK0/8QAFwEBAQEBAAAAAAAAAAAAAAAAAAECA//EAB4RAQACAgIDAQAAAAAAAAAAAAABEQIhAxIxUXHw/9oADAMBAAIRAxEAPwCGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZElFWR9HmUk7PMXTOqNU6l+CfE5bF0reqJHa0s7EXf+5CzTxF8p49xJYbfkNzsrbvdZpX09tp2qxkndEdI7zFRVYz2WI5URVVVZ296BWBLHJFIscrHMe3srXJpU/I5mUNa+lWqZR1DqdEVVlSJVYiJ699aJ+YLlOBeK7DL1Y8gxhLVd6BrdO8xs0tOj99E0EvS1ezm+01URPRF6kUwsStNTj/gUymxVrmrU22nvNJMrfTrjqZ2Lr5bRQloG0tNUVUnl00Es79b6Y2K5dfHSHN9m3Hplf8AUKrph35q+S7TNJtd9u3bv3JDfR3J+3Sv/AKj+tAS5wCot9LDyjU3Vsb7fBkdVJVtkYjmrElDTK9FRfVNb7AVcvhmZCyZ0UjYpFVGPVqo12vXS+8+wU9RUdXkQSy9CdTuhiu0nxXRLS85pZfFRydh2D0lhrbJZ7XPU1VVI+dqvkpkY32Ua1NRuXoRvq5E6vfrv73leR3bjGSjxbjPhO4Xq2wsa6aWhcykp49+5qq1yyP13VV16+qrvVLVl+/RkyUFdFJHHJRVLHyrqNronIr/AOSa7k7vFRxnYMt40h5Rt+OS2LIqFYaqrgkgbFNLEsjWyRzInZXs3tH9+zVTaoqa9J8SHLtr4ex+3Xqosf2zcqyd1PR06SpDpukdI5ZOlytRNN7IndVT+aQtWC9jo3uY9qtc1dOaqaVF+B+5aeeGOOSWCWNkidUbnMVEenxT4llOLZDxtylxtRc0ZDh9GyWyQ1NS/wCsRtmkpVhR3WiO0nmIiJ1N2id9KiIp13hvnDE/EBdrzgV9wZtNT/U3VEcdTO2pjnhRzWrv2G+W9Otqprfv7ppN0tC7DW48uC3htwstRV3F/WlPUMgV6MXoTpRHf5dLty/LXr6HTJqGthYx81HURseqI1z4lRHKvoibTuWC8P4zDhvCfLeKU0jpKW2Xa7QwOcvtLEtHE5m1+KNcm/minaOQOSbTxVwLjmU3O1OusyU9HT0NM1yM653U6qntqi9HsNk9rS9u3vN58veMcajX7bjxcXTLLKJme29z4+elZs8UsEropo3xSN+817VRU/JT8FhdjumJeKvhi9PuGNMtV3oHSQQue9JpKSbo645I5elqqxdp1N0m9ORfcp1fw+41hfCvh8bzJlNtbX3isp2VTHoxHyRxyP6YIYd/dVyK1zndvvLtVRqGHa0d/CdYKC7+InF7NkdngraKdKp0tJW06PjkRKSZzVVjk0qI5qKnzQzfGhY7Nj3PNxtdhtVFa6FlJTObTUcDYo2qsaKqo1qIm195KPgTxI4/y1nkGPXLEG2W8MZJPa5XVDapHK1i+Y1r1Y1zH9Cu9EVFajtqnouxx/FcZvvi+za73qkp6y4Wi12x1uinaj0Z5jHdcqNX1c3oYiL7uv46ArompqiGOOSaCWNkidUbnsVEcnxRV9TiLIc25Kp44r/Y+aeKrla8Xaqtp7g1i3OlqmdSp1PdEz9Q7XS5u13tV7ore9duRx2uHIblFZKiWptbKuVtFNK3pfJCj18tzkX0VW6VUIMAABQAAAAAAAAAAZdmTd4ok+NRGn/chZJ4ruG6nl/E7dTWm4U1DebVUPlpXVXV5UrHtRHscrUVW70xerS66da77StyyKiXmhVVRESoj3v/AHITX+kFyW62Klwmuxm/VltrGz1jVnoKt0UiIrYdtVzFRdLr0+QSW98PXGEHhyxPJc15Dv8AbmzTQsbJ9Wc5YoYmKqo1rnI1XyPc5ERqJ6oiJvZx+HjJLZzRwfnGGuro7beK+suT5Y1TrdEyslfKybp2nU1Hyq1e6fc122hB/KcwyvKnxuybJbveViVVjSurJJkj369KOVUb+RrrRc7lZ7hFcbRcKu31sW1jqKWZ0UjNppdOaqKhSk9/Cl4db7xRmNzybI73baueWjdRUsFAsjm9Dnsc573Pa1UX2ERGoip3Xudxj03AubV932jclX/p0BABeWeUFrG1juQ8pdUMYrGvW6zKrWrraJ7XbekMdeS+QlpLhSLmt/8AIuT3vro/r8mqlz2Ixyv7+1trUau/chCnaPCpnVv4+5qtN7vEnlWuZr6Orl1+6ZImkevya5GqvyRScfKdi5svF7p7rxTyTY6GyVULFdS11HFI2Pt+8ilSF6vRyaXTvyXS6Ssg7Ljuf51jtv8As+wZlkFqo++qekuMsUaKq7VUa1yIi796dwUmj4nr1X4VxjBYL/yhdb1kd58imdQJSUMUMretvnSKxkHmMj0iont72qd1760X0ln9g4T/AMVV/wDpEQwuFxuFxuMlyuFdVVlbK5HyVM8rpJXuT0VXKqqq9kNrlWaZdlcdPHk2TXe8splc6BtdVvmSNV1tWo5V1vSf8gUmFwFpPATmH4feP6Ljy36PFf28Vf4FUf1YTxC3Ztl9txufG7fk93pbLO17ZqCGre2CRHpp6OYi6VFT12YeM5FfsYuK3LHLzX2itWNYlno53RPViqiq3bVRdLpO3yQpSx63/wBzObu/+q3Ff/G055d42v8ACngv4hb/AP4ZyJX6SuQvIuMCZrkCRXN75K5iV8iNqXPYjHK9N+0qta1q79yIhh3/ADfMcgs1NZr5lF4udtpXNdBS1VY+SKNWtVrVa1y6RUaqonyVSUUmF9HDr9H2YfiEf9I2HEq2Ln3wmx8dNu0VBe7XSxUkrOznQOgeiwSq3sro3ta1FX4q9E7pshZi+a5fi1NPTY1k94s8NQ5HTR0VY+FsiomkVUaqb7Gss91udmr47hZ7jWW6sj+5UUs7opG/yc1UVClJx+GTww3rjjkNmZZXe7XVz0MUrKCntyyOTqkarHPe57Wa0xz06URdq7e01pcu94hbcs8XWSOgzq74rk9BbqKSgWgdGi1MSxfrEVHIvX06btq7RUVOy6UhnNydyPPcKW4T55k01VSKq00sl0mc6FVYrFVu3eyqtVUVU9UVTUXbJ8ju1/bkFzvtyq7u3pVtdLUvdO3pTTdP3tNe7uBZzxnScrW9t1peU7viV2tUceqWso4nxTSt2vU6dqokbU6fVGpre+6p3K0OSnWN3ImRuxlGJZFulStvSP7nkea7o6f4enWvlo5r3yHn18tjrZec2yO40Lk0+mqrnNJG9P4mucqL+Z1ggAAKAAAAAAAAAAAfVVV9VVT4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/Z';
+  const L2='/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCADhAOEDASIAAhEBAxEB/8QAGQABAQEBAQEAAAAAAAAAAAAAAAMCAQQI/8QAJxABAQEAAgECBQQDAAAAAAAAAAECAxESITEEBRNBUSIyYZFxgdH/xAAXAQEBAQEAAAAAAAAAAAAAAAAAAQID/8QAHhEBAQEAAgIDAQAAAAAAAAAAAAERAhMDEiExYXH/2gAMAwEAAhEDEQA/APjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFODj+pyePfU6tt/iLJtwTFscfHyW5xqzU9u5+5PWZMS/ereFnymsi2OOXONW/u1YzrObyeGPz72rfHZNNTF88fDvdzNaz7+t9e3M8fHOG73b3NdST7tdXI1F6/lHy74v5r8w4vgPgOKcvxHL34ZupnvqW31vp7Sp3i4pxzkutSX2lnv/tzOcfUxca1Jfv+Gp4s5T2+v6zytsvr9pbzcaudTqy9WOLTPF9Ly1dd9+0ZvHLrMzqda/P2Z5eKxrU3bOr1VOuL6nWfKzv3NZl3q3u9XrqHVTUhrXj3+ntlzsxQBAAAAAAAAAAAAAb4rc6tn4vf+GHZev6a43Lopi449+edd2XvMZlmp1rUz6+9jAvv+Jis1JMTv0ltYzet9+7IXnaYvi8cuvLk1116TP5/ljWpeLrv18u+kxeymL8nJi/CcfHP3S+v93/qcskz6+3bAnZd0xvVnhmS+1rudyeF/HumE52XVVzOKb8rrufgus3k1fKzu+lSGu38TG+Sy2fe/esA58uXtdqgCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//2Q==';
+  document.getElementById('logoMain').src='data:image/png;base64,'+L1;
+  document.getElementById('logoSec').src='data:image/png;base64,'+L2;
+})();
+
+if(!bids.length){
+  bids=[
+    {id:uid(),tender:'2025-ETM-0101',lot:'لوت 1',title:'إنتاج إعلامي لرؤية 2030',client:'وزارة الثقافة والإعلام',src:'منصة اعتماد',type:'منافسة عامة',sub:'Peacock',val:2800000,bond:56000,pub:'2025-02-01',dl:'2025-07-10',open:'2025-07-20',mgr:'اسمك',prob:75,stage:'تحضير',comp:'روتانا للإنتاج',loss:'',winp:'',notes:'تتوافق قدراتنا بشكل ممتاز.',link:'',reqs:[],offer:[],ai:null,cr:new Date().toISOString()},
+    {id:uid(),tender:'2025-ETM-0088',lot:'',title:'معرض الدفاع العالمي – تصميم الجناح',client:'الهيئة العامة للصناعات العسكرية',src:'منصة اعتماد',type:'منافسة محدودة',sub:'GlobalMind',val:5500000,bond:110000,pub:'2025-01-15',dl:'2025-08-28',open:'2025-09-05',mgr:'اسمك',prob:60,stage:'مقدمة',comp:'إكزيبيت العالمية',loss:'',winp:'',notes:'تم التقديم في الوقت.',link:'',reqs:[],offer:[],ai:null,cr:new Date().toISOString()},
+    {id:uid(),tender:'2025-ETM-0041',lot:'',title:'سيتي سكيب 2025 – طباعة وإشارات',client:'شركة المنظمين',src:'طلب عروض مباشر',type:'شراء مباشر',sub:'KEES',val:650000,bond:0,pub:'2025-01-10',dl:'2025-03-20',open:'2025-03-25',mgr:'اسمك',prob:90,stage:'رُسّينا',comp:'',loss:'',winp:'',notes:'تم توقيع العقد.',link:'',reqs:[{id:uid(),title:'لافتات خارجية كبيرة',qty:20,unit:'قطعة',cat:'طباعة',chk:true},{id:uid(),title:'بروشورات ترويجية A4',qty:5000,unit:'قطعة',cat:'طباعة',chk:true}],offer:[{id:uid(),desc:'لافتات خارجية كبيرة',qty:20,unit:'قطعة',price:800},{id:uid(),desc:'بروشورات A4',qty:5000,unit:'قطعة',price:5}],ai:null,cr:new Date().toISOString()},
+    {id:uid(),tender:'2025-ETM-0033',lot:'',title:'سلسلة أفلام التحول الرقمي',client:'هيئة الحكومة الرقمية',src:'منصة اعتماد',type:'منافسة عامة',sub:'Deep Vision',val:980000,bond:19600,pub:'2024-12-01',dl:'2025-02-28',open:'2025-03-10',mgr:'اسمك',prob:40,stage:'خسرنا',comp:'فيلم هاوس',loss:'السعر (عرضنا أعلى)',winp:820000,notes:'خسرنا بفارق سعر.',link:'',reqs:[],offer:[],ai:null,cr:new Date().toISOString()},
+  ];
+  save();
+}
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function save(){try{localStorage.setItem('pm_v5',JSON.stringify(bids));}catch(e){}}
+function gb(id){return bids.find(b=>b.id===id);}
+function sar(v){if(!v||v==0)return'—';if(v>=1000000)return(v/1000000).toFixed(1)+'م ريال';if(v>=1000)return(v/1000).toFixed(0)+'ألف ريال';return Number(v).toLocaleString('ar-SA')+' ريال';}
+function sarF(v){if(!v||v==0)return'—';return Number(v).toLocaleString('ar-SA')+' ريال';}
+function du(d){if(!d)return null;return Math.ceil((new Date(d)-new Date())/86400000);}
+function ds(d){if(!d)return'—';return new Date(d).toLocaleDateString('ar-SA',{day:'2-digit',month:'short',year:'numeric'});}
+function pc(p){return p>=70?'var(--success)':p>=45?'var(--warning)':'var(--danger)';}
+
+function stageP(s){
+  const c=SC[s]||'#6b7280';
+  return '<span class="stage-pill" style="background:'+c+'22;color:'+c+';border:1px solid '+c+'44"><span class="stage-dot" style="background:'+c+'"></span>'+s+'</span>';
+}
+
+function dlHTML(d,stage){
+  if(!d)return '<span style="color:var(--muted)">—</span>';
+  const days=du(d);
+  const fmt=new Date(d).toLocaleDateString('ar-SA',{day:'2-digit',month:'short'});
+  if(TERM.includes(stage))return '<div style="color:var(--muted);text-decoration:line-through">'+fmt+'</div>';
+  let cls='color:var(--muted)',lbl=days+' يوم';
+  if(days<0){cls='color:var(--muted);text-decoration:line-through';lbl='انتهى';}
+  else if(days<=5){cls='color:var(--danger)';lbl='⚠ '+days+' أيام';}
+  else if(days<=14){cls='color:var(--warning)';lbl=days+' يوم';}
+  return '<div style="font-size:11px;font-weight:600">'+fmt+'</div><div style="font-size:10px;'+cls+'">'+lbl+'</div>';
+}
+
+function switchTab(t,el){
+  document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');
+  ['bids','reports','reminders'].forEach(x=>document.getElementById('tab-'+x).classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  if(t==='reports')renderReports();
+  if(t==='reminders')renderRem();
+}
+
+function switchBidTab(t,el){
+  document.querySelectorAll('.bid-modal-tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');
+  document.querySelectorAll('.bid-tab-content').forEach(x=>x.classList.remove('active'));
+  document.getElementById('btab-'+t).classList.add('active');
+  if(t==='req')renderReqList();
+  if(t==='fin')renderOffer();
+  if(t==='win')renderWinTab();
+}
+
+function renderStats(){
+  const tot=bids.length,act=bids.filter(b=>!TERM.includes(b.stage)).length;
+  const aw=bids.filter(b=>b.stage==='رُسّينا'),lo=bids.filter(b=>b.stage==='خسرنا');
+  const done=aw.length+lo.length,wr=done>0?Math.round((aw.length/done)*100):0;
+  const pv=bids.filter(b=>b.stage!=='خسرنا'&&b.stage!=='ملغاة').reduce((s,b)=>s+(+b.val||0),0);
+  const av=aw.reduce((s,b)=>s+(+b.val||0),0);
+  const bv=bids.filter(b=>!TERM.includes(b.stage)).reduce((s,b)=>s+(+b.bond||0),0);
+  const aiB=bids.filter(b=>b.ai&&b.ai.score);
+  const aiAvg=aiB.length?Math.round(aiB.reduce((s,b)=>s+b.ai.score,0)/aiB.length):null;
+  document.getElementById('statsBar').innerHTML=
+    stat('إجمالي المناقصات',tot,'جميع المراحل','#eef0f5')+
+    stat('نشطة الآن',act,'قيد التنفيذ','var(--info)')+
+    stat('قيمة الأعمال',(pv/1000000).toFixed(1)+'م ريال','بدون الخاسرة','var(--accent2)')+
+    stat('التأمينات المجمّدة',(bv/1000).toFixed(0)+'ألف','في المناقصات النشطة','var(--purple)')+
+    stat('عقود مُرسّاة',(av/1000000).toFixed(1)+'م ريال',aw.length+' عقد فائز','var(--success)')+
+    stat('نسبة الفوز / AI',wr+'% '+(aiAvg!==null?'<span style="font-size:13px;color:var(--purple)">/ '+aiAvg+'%</span>':''),aw.length+'/'+done+(aiAvg!==null?' • '+aiB.length+' محللة':''),wr>=50?'var(--success)':'var(--danger)');
+}
+function stat(lbl,val,sub,clr){
+  return '<div class="stat-card"><div class="stat-label">'+lbl+'</div><div class="stat-value" style="color:'+clr+'">'+val+'</div><div class="stat-sub">'+sub+'</div></div>';
+}
+
+function renderStageTabs(){
+  const cnts={};STAGES.forEach(s=>cnts[s]=bids.filter(b=>b.stage===s).length);
+  document.getElementById('stageTabs').innerHTML=
+    '<button class="stage-tab '+(activeStage==='all'?'active':'')+'" onclick="setStage(\'all\')" style="color:var(--text)">الكل ('+bids.length+')</button>'+
+    STAGES.map(s=>'<button class="stage-tab '+(activeStage===s?'active':'')+'" onclick="setStage(\''+s+'\')" style="color:'+SC[s]+'">'+SI[s]+' '+s+' ('+(cnts[s]||0)+')</button>').join('');
+}
+function setStage(s){activeStage=s;renderAll();}
+
+function renderRemBanner(){
+  const urg=bids.filter(b=>{if(TERM.includes(b.stage))return false;const d=du(b.dl);return d!==null&&d>=0&&d<=5;});
+  const soon=bids.filter(b=>{if(TERM.includes(b.stage))return false;const d=du(b.dl);return d!==null&&d>5&&d<=14;});
+  let h='';
+  if(urg.length)h+='<div class="reminder-banner urgent"><span>🚨</span><span class="reminder-text">لديك <strong>'+urg.length+'</strong> مناقصة موعدها خلال 5 أيام أو أقل!</span><span class="reminder-count red">'+urg.length+'</span></div>';
+  if(soon.length)h+='<div class="reminder-banner"><span>⏰</span><span class="reminder-text">لديك <strong>'+soon.length+'</strong> مناقصة موعدها خلال أسبوعين</span><span class="reminder-count">'+soon.length+'</span></div>';
+  document.getElementById('remArea').innerHTML=h;
+  const tot=urg.length+soon.length;
+  document.getElementById('remBadge').innerHTML=tot?'<span style="background:var(--danger);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-right:6px">'+tot+'</span>':'';
+}
+
+function getFiltered(){
+  const q=document.getElementById('srch').value.toLowerCase();
+  const sub=document.getElementById('fSub').value;
+  const type=document.getElementById('fType').value;
+  const sort=document.getElementById('fSort').value;
+  let list=bids.filter(b=>{
+    const ms=activeStage==='all'||b.stage===activeStage;
+    const mq=!q||[b.title,b.client,b.tender||'',b.notes||''].join(' ').toLowerCase().includes(q);
+    return ms&&mq&&(!sub||b.sub===sub)&&(!type||b.type===type);
+  });
+  if(sort==='deadline')list.sort((a,b)=>(a.dl||'9999')>(b.dl||'9999')?1:-1);
+  else if(sort==='vd')list.sort((a,b)=>(+b.val||0)-(+a.val||0));
+  else if(sort==='va')list.sort((a,b)=>(+a.val||0)-(+b.val||0));
+  else list.sort((a,b)=>b.cr>a.cr?1:-1);
+  return list;
+}
+
+function renderTable(){
+  renderStats();renderStageTabs();renderRemBanner();
+  const list=getFiltered();
+  const tbody=document.getElementById('tBody');
+  if(!list.length){tbody.innerHTML='';document.getElementById('emptyState').style.display='block';return;}
+  document.getElementById('emptyState').style.display='none';
+  tbody.innerHTML=list.map(b=>{
+    const rc=(b.reqs||[]).length;
+    const sc=b.ai&&b.ai.score?b.ai.score:(+b.prob||0);
+    const clr=pc(sc);
+    return '<tr onclick="openDetail(\''+b.id+'\')">'+
+      '<td><div style="font-size:11px;font-weight:700;color:var(--accent)">'+(b.tender||'—')+'</div>'+(b.lot?'<div style="font-size:10px;color:var(--muted)">'+b.lot+'</div>':'')+'</td>'+
+      '<td><div style="font-weight:600;max-width:200px;line-height:1.4">'+b.title+'</div><div style="font-size:11px;color:var(--muted);margin-top:1px">'+b.client+'</div></td>'+
+      '<td><div style="display:flex;flex-direction:column;gap:3px"><span class="badge badge-type">'+b.type+'</span><span class="badge badge-sub">'+b.sub+'</span></div></td>'+
+      '<td>'+stageP(b.stage)+'</td>'+
+      '<td><div style="font-weight:700;font-size:12px;color:var(--accent2)">'+sar(b.val)+'</div>'+(b.bond>0?'<div style="font-size:10px;color:#c084fc">تأمين: '+sar(b.bond)+'</div>':'')+'</td>'+
+      '<td>'+dlHTML(b.dl,b.stage)+'</td>'+
+      '<td><span class="badge badge-req" onclick="event.stopPropagation();openDetail(\''+b.id+'\',\'req\')">'+(rc>0?'📋 '+rc+' بند':'＋ إضافة')+'</span></td>'+
+      '<td><div class="progress-bar"><div class="progress-fill" style="width:'+sc+'%;background:'+clr+'"></div></div><div style="font-size:11px;font-weight:700;color:'+clr+';margin-top:2px">'+sc+'%'+(b.ai&&b.ai.score?' 🤖':'')+'</div></td>'+
+      '<td><div class="actions-cell" onclick="event.stopPropagation()">'+
+        '<button class="icon-btn" onclick="openDetail(\''+b.id+'\')">👁</button>'+
+        '<button class="icon-btn" onclick="openEdit(\''+b.id+'\')">✏️</button>'+
+        '<button class="icon-btn del" onclick="delBid(\''+b.id+'\')">🗑</button>'+
+      '</div></td>'+
+    '</tr>';
+  }).join('');
+}
+
+function renderAll(){renderStats();renderStageTabs();renderTable();renderRemBanner();}
+
+function openDetail(id,tab){
+  curId=id;
+  const b=gb(id);if(!b)return;
+  document.getElementById('dm_num').textContent=(b.tender||'')+(b.lot?' • '+b.lot:'');
+  document.getElementById('dm_title').textContent=b.title;
+  document.getElementById('dm_stage').innerHTML=stageP(b.stage);
+  document.getElementById('ovContent').innerHTML=buildOv(b);
+  document.querySelectorAll('.bid-modal-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  document.querySelectorAll('.bid-tab-content').forEach((t,i)=>t.classList.toggle('active',i===0));
+  if(tab==='req')setTimeout(()=>document.querySelectorAll('.bid-modal-tab')[1].click(),50);
+  if(tab==='win')setTimeout(()=>document.querySelectorAll('.bid-modal-tab')[3].click(),50);
+  document.getElementById('of_dt').value=new Date().toISOString().slice(0,10);
+  document.getElementById('of_to').value=b.client||'';
+  document.getElementById('of_ref').value='PM-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*900+100);
+  document.getElementById('bidModal').classList.add('open');
+}
+
+function buildOv(b){
+  const sc=b.ai&&b.ai.score?b.ai.score:(+b.prob||0);
+  return '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">'+
+    ov('العميل',b.client||'—')+ov('الشركة المنفذة',b.sub)+ov('نوع المناقصة',b.type||'—')+
+    ov('قيمة المناقصة','<span style="color:var(--accent2);font-size:16px;font-weight:800">'+sarF(b.val)+'</span>')+
+    ov('التأمين الابتدائي','<span style="color:#c084fc">'+sarF(b.bond)+'</span>')+
+    ov('احتمالية الفوز','<span style="color:'+pc(sc)+';font-size:16px;font-weight:800">'+sc+'%'+(b.ai&&b.ai.score?' 🤖':'')+'</span>')+
+    ov('تاريخ النشر',ds(b.pub))+ov('الموعد النهائي','<span style="color:'+(du(b.dl)<=5&&du(b.dl)>=0?'var(--danger)':'var(--text)')+'">'+ds(b.dl)+'</span>')+ov('فتح المظاريف',ds(b.open))+
+  '</div>'+
+  (b.comp?'<div style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:10px"><div style="font-size:10px;color:var(--muted);font-weight:700;margin-bottom:4px">🏁 المنافسون</div><div style="font-size:13px">'+b.comp+'</div></div>':'')+
+  (b.loss?'<div style="background:#1a000022;border:1px solid #ef444444;border-radius:8px;padding:12px;margin-bottom:10px"><div style="font-size:10px;color:var(--danger);font-weight:700;margin-bottom:4px">❌ سبب الخسارة</div><div style="font-size:13px;color:var(--danger)">'+b.loss+(b.winp?' | سعر الفائز: '+sarF(b.winp):'')+'</div></div>':'')+
+  (b.notes?'<div style="background:var(--surface2);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--muted);font-weight:700;margin-bottom:4px">📝 الملاحظات</div><div style="font-size:13px;line-height:1.7;white-space:pre-wrap">'+b.notes+'</div></div>':'');
+}
+function ov(lbl,val){return '<div style="background:var(--surface2);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--muted);font-weight:700">'+lbl+'</div><div style="font-weight:600;margin-top:2px">'+val+'</div></div>';}
+
+function editFromDetail(){closeModal('bidModal');openEdit(curId);}
+
+// REQUIREMENTS
+function renderReqList(){
+  const b=gb(curId);if(!b)return;
+  const reqs=b.reqs||[];
+  document.getElementById('reqCnt').textContent=reqs.length?'('+reqs.length+' بند)':'';
+  if(!reqs.length){document.getElementById('reqList').innerHTML='<div class="add-row" onclick="addReq()">＋ أضف أول متطلب</div>';return;}
+  document.getElementById('reqList').innerHTML=reqs.map(r=>{
+    const cat=CATS.find(c=>c.n===r.cat)||CATS[6];
+    return '<div class="req-item">'+
+      '<input type="checkbox" class="req-check" '+(r.chk?'checked':'')+' onchange="updReq(\''+r.id+'\',\'chk\',this.checked)">'+
+      '<div class="req-content">'+
+        '<input class="req-input" value="'+(r.title||'')+'" onchange="updReq(\''+r.id+'\',\'title\',this.value)" placeholder="وصف المتطلب">'+
+        '<div class="req-meta">'+
+          '<span class="req-cat" style="background:'+cat.c+'22;color:'+cat.c+';border:1px solid '+cat.c+'44">'+r.cat+'</span>'+
+          '<input type="number" class="req-num" value="'+(r.qty||1)+'" min="1" onchange="updReq(\''+r.id+'\',\'qty\',+this.value)">'+
+          '<select class="req-sel" onchange="updReq(\''+r.id+'\',\'unit\',this.value)">'+UNITS.map(u=>'<option '+(u===r.unit?'selected':'')+'>'+u+'</option>').join('')+'</select>'+
+          '<select class="req-sel" onchange="updReq(\''+r.id+'\',\'cat\',this.value);renderReqList()" style="width:78px">'+CATS.map(c=>'<option '+(c.n===r.cat?'selected':'')+'>'+c.n+'</option>').join('')+'</select>'+
+        '</div>'+
+      '</div>'+
+      '<button class="req-del" onclick="delReq(\''+r.id+'\')">✕</button>'+
+    '</div>';
+  }).join('')+'<div class="add-row" onclick="addReq()">＋ إضافة بند</div>';
+}
+
+function updReq(id,f,v){const b=gb(curId);if(!b)return;const r=(b.reqs||[]).find(r=>r.id===id);if(r){r[f]=v;save();}}
+function delReq(id){const b=gb(curId);if(!b)return;b.reqs=(b.reqs||[]).filter(r=>r.id!==id);save();renderReqList();renderTable();}
+function addReq(){const b=gb(curId);if(!b)return;if(!b.reqs)b.reqs=[];b.reqs.push({id:uid(),title:'',qty:1,unit:'وحدة',cat:'أخرى',chk:true});save();renderReqList();renderTable();}
+function saveReqs(){save();renderTable();toast('✓ تم حفظ المتطلبات');}
+function toFinancial(){
+  const b=gb(curId);if(!b)return;
+  if(!b.offer||!b.offer.length){
+    b.offer=(b.reqs||[]).filter(r=>r.chk&&r.title).map(r=>({id:uid(),desc:r.title,qty:r.qty||1,unit:r.unit||'وحدة',price:0}));
+    save();
+  }
+  document.querySelectorAll('.bid-modal-tab')[2].click();
+}
+
+// AI FILE PROCESSING
+async function handleFile(ev){
+  const file=ev.target.files[0];if(!file)return;
+  document.getElementById('aiProc').classList.add('show');
+  document.getElementById('reqUpload').style.opacity='0.4';
+  const steps=['جاري قراءة الملف...','تحليل هيكل الكراسة...','استخراج البنود والمتطلبات...','تصنيف المتطلبات...','مراجعة النتائج...'];
+  let si=0;
+  const iv=setInterval(()=>{const el=document.getElementById('aiTxt');if(el&&si<steps.length)el.textContent=steps[si++];},900);
+  try{
+    let txt='';
+    if(file.type==='application/pdf'||file.name.endsWith('.pdf')){txt=await readPDF(file);}
+    else{txt=await file.text();}
+    clearInterval(iv);
+    document.getElementById('aiTxt').textContent='إرسال للذكاء الاصطناعي...';
+    const res=await aiExtract(txt,file.name);
+    const b=gb(curId);
+    if(b){
+      if(!b.reqs)b.reqs=[];
+      b.reqs=[...b.reqs,...res.map(r=>({id:uid(),title:r.title,qty:r.qty||1,unit:r.unit||'وحدة',cat:r.cat||'أخرى',chk:true}))];
+      save();
+    }
+    toast('✓ تم استخراج '+res.length+' متطلب');
+  }catch(e){clearInterval(iv);toast('تعذّر معالجة الملف');}
+  document.getElementById('aiProc').classList.remove('show');
+  document.getElementById('reqUpload').style.opacity='1';
+  ev.target.value='';
+  renderReqList();renderTable();
+}
+
+function readPDF(file){
+  return new Promise(res=>{
+    const r=new FileReader();
+    r.onload=function(e){
+      try{
+        const bytes=new Uint8Array(e.target.result);
+        const txt=new TextDecoder('utf-8',{fatal:false}).decode(bytes);
+        const re=/[\u0600-\u06FF\w\s\n.,:\-\/()]/;
+        let out='';
+        for(let i=0;i<txt.length;i++){if(re.test(txt[i]))out+=txt[i];}
+        out=out.replace(/\s+/g,' ').trim();
+        res(out.length>80?out:'ملف PDF: '+file.name);
+      }catch(ex){res('ملف: '+file.name);}
+    };
+    r.readAsArrayBuffer(file);
+  });
+}
+
+async function callAI(msgs,maxTok){
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:maxTok||1000,messages:msgs})
+  });
+  const d=await r.json();
+  return d.content&&d.content[0]?d.content[0].text||'':'';
+}
+
+async function aiExtract(txt,fname){
+  const prompt='أنت خبير مناقصات سعودية. استخرج كل البنود القابلة للتسعير من كراسة الشروط التالية.\n\nلكل بند:\n- title: الوصف بالعربية\n- qty: الكمية (رقم)\n- unit: من (وحدة، ساعة، يوم، شهر، متر، م²، قطعة، مجموعة، باقة، مشروع)\n- cat: من (إنتاج، تصميم، فعاليات، طباعة، تقني، إداري، أخرى)\n\nالملف: '+fname+'\nالنص:\n'+txt.slice(0,7000)+'\n\nأجب بـ JSON array فقط:';
+  const text=await callAI([{role:'user',content:prompt}]);
+  const clean=text.replace(/```json|```/g,'').trim();
+  try{const p=JSON.parse(clean);return Array.isArray(p)?p:[];}
+  catch{return [{title:'متطلب من الكراسة (راجع يدوياً)',qty:1,unit:'مشروع',cat:'أخرى'}];}
+}
+
+// OFFER
+function renderOffer(){
+  const b=gb(curId);if(!b)return;
+  const offer=b.offer||[];
+  document.getElementById('offerBody').innerHTML=offer.map((row,i)=>{
+    const t=(+row.qty||0)*(+row.price||0);
+    return '<tr id="or-'+row.id+'">'+
+      '<td style="text-align:center;color:var(--muted);font-size:11px">'+(i+1)+'</td>'+
+      '<td><input class="offer-inp" value="'+(row.desc||'')+'" onchange="updOffer(\''+row.id+'\',\'desc\',this.value)" placeholder="وصف البند" style="min-width:160px"></td>'+
+      '<td><input class="offer-inp" type="number" value="'+(row.qty||1)+'" onchange="updOffer(\''+row.id+'\',\'qty\',+this.value);calcOffer()" style="text-align:center;width:65px"></td>'+
+      '<td><select class="offer-inp" onchange="updOffer(\''+row.id+'\',\'unit\',this.value)" style="width:70px">'+UNITS.map(u=>'<option '+(u===row.unit?'selected':'')+'>'+u+'</option>').join('')+'</select></td>'+
+      '<td><input class="offer-inp" type="number" value="'+(row.price||0)+'" onchange="updOffer(\''+row.id+'\',\'price\',+this.value);calcOffer()" style="text-align:center;width:100px"></td>'+
+      '<td style="font-weight:700;color:var(--accent2)" id="ot-'+row.id+'">'+t.toLocaleString('ar-SA')+'</td>'+
+      '<td><button class="req-del" onclick="delOffer(\''+row.id+'\')">✕</button></td>'+
+    '</tr>';
+  }).join('');
+  calcOffer();
+}
+
+function updOffer(id,f,v){const b=gb(curId);if(!b)return;const r=(b.offer||[]).find(r=>r.id===id);if(r){r[f]=v;save();}}
+
+function calcOffer(){
+  const b=gb(curId);if(!b)return;
+  const disc=+(document.getElementById('discPct').value)||0;
+  const hasVat=document.getElementById('vatCk').checked;
+  let sub=0;
+  (b.offer||[]).forEach(r=>{
+    const t=(+r.qty||0)*(+r.price||0);sub+=t;
+    const el=document.getElementById('ot-'+r.id);if(el)el.textContent=t.toLocaleString('ar-SA');
+  });
+  const da=sub*(disc/100),ad=sub-da,vat=hasVat?ad*.15:0,grand=ad+vat;
+  document.getElementById('offerFoot').innerHTML=
+    (disc>0?'<tr class="disc-row tot-row"><td colspan="5" style="text-align:left;font-size:11px">خصم '+disc+'%</td><td colspan="2">- '+da.toLocaleString('ar-SA')+'</td></tr>':'')+
+    '<tr class="tot-row"><td colspan="5" style="text-align:left;font-size:11px">المجموع قبل الضريبة</td><td colspan="2">'+ad.toLocaleString('ar-SA')+' ريال</td></tr>'+
+    (hasVat?'<tr class="vat-row tot-row"><td colspan="5" style="text-align:left;font-size:11px">ضريبة القيمة المضافة 15%</td><td colspan="2">'+vat.toLocaleString('ar-SA')+' ريال</td></tr>':'')+
+    '<tr class="grand-row tot-row"><td colspan="5" style="text-align:left">الإجمالي الكلي</td><td colspan="2">'+grand.toLocaleString('ar-SA')+' ريال</td></tr>';
+}
+
+function addOfferRow(){const b=gb(curId);if(!b)return;if(!b.offer)b.offer=[];b.offer.push({id:uid(),desc:'',qty:1,unit:'وحدة',price:0});save();renderOffer();}
+function delOffer(id){const b=gb(curId);if(!b)return;b.offer=(b.offer||[]).filter(r=>r.id!==id);save();renderOffer();}
+function saveOffer(){save();toast('✓ تم حفظ العرض المالي');}
+
+function printOffer(){
+  const b=gb(curId);if(!b)return;
+  const co=document.getElementById('of_co').value;
+  const ref=document.getElementById('of_ref').value;
+  const dt=document.getElementById('of_dt').value;
+  const to=document.getElementById('of_to').value;
+  const vld=document.getElementById('of_val').value;
+  const nt=document.getElementById('of_note').value;
+  const disc=+(document.getElementById('discPct').value)||0;
+  const hasVat=document.getElementById('vatCk').checked;
+  const offer=b.offer||[];
+  let sub=offer.reduce((s,r)=>s+(+r.qty||0)*(+r.price||0),0);
+  const da=sub*(disc/100),ad=sub-da,vat=hasVat?ad*.15:0,grand=ad+vat;
+  const L1=document.getElementById('logoMain').src;
+  const rows=offer.map((r,i)=>{const t=(+r.qty||0)*(+r.price||0);return'<tr><td style="text-align:center">'+(i+1)+'</td><td>'+(r.desc||'')+'</td><td style="text-align:center">'+r.qty+'</td><td style="text-align:center">'+r.unit+'</td><td style="text-align:left">'+Number(r.price||0).toLocaleString('ar-SA')+'</td><td style="text-align:left;font-weight:700">'+t.toLocaleString('ar-SA')+'</td></tr>';}).join('');
+  const pw=window.open('','_blank','width=920,height=700');
+  pw.document.write('<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet"><style>body{font-family:Cairo,sans-serif;color:#111;padding:28px;direction:rtl;font-size:13px;}.hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #c9a84c;padding-bottom:14px;margin-bottom:18px;}.h2{font-size:17px;font-weight:800;color:#c9a84c;margin:0 0 3px;}.meta{display:grid;grid-template-columns:1fr 1fr;gap:7px 20px;background:#f8f8f0;border-radius:7px;padding:11px 14px;margin-bottom:16px;font-size:12px;}.ml{font-size:10px;color:#666;}.mv{font-weight:700;}table{width:100%;border-collapse:collapse;margin-bottom:14px;}th{background:#1e2330;color:#e8c97a;padding:8px 11px;text-align:right;font-size:11px;border:1px solid #ddd;}td{padding:7px 11px;border:1px solid #e5e5e5;font-size:12px;}tr:nth-child(even)td{background:#fafafa;}.tr{display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid #eee;font-size:12px;}.gr{background:#f8f0dc;font-weight:800;font-size:14px;color:#8b6914;border-radius:5px;border:none;}.vt{color:#16a34a;}.dc{color:#dc2626;}.notes{background:#fffbeb;border:1px solid #f59e0b;border-radius:5px;padding:9px;font-size:11px;margin-top:12px;}.sig{margin-top:36px;display:grid;grid-template-columns:1fr 1fr;gap:36px;}.sb{border-top:1px solid #ccc;padding-top:8px;text-align:center;font-size:11px;color:#666;}</style></head><body>');
+  pw.document.write('<div class="hdr"><div><img src="'+L1+'" style="height:36px"><div style="font-size:10px;color:#666;margin-top:3px">'+co+'</div></div><div><div class="h2">عرض سعر / عرض مالي</div><div style="font-size:10px;color:#666">رقم العرض: <strong>'+ref+'</strong> | التاريخ: <strong>'+new Date(dt).toLocaleDateString('ar-SA',{day:'2-digit',month:'long',year:'numeric'})+'</strong></div></div></div>');
+  pw.document.write('<div class="meta"><div><div class="ml">المناقصة</div><div class="mv">'+b.title+'</div></div><div><div class="ml">مقدَّم إلى</div><div class="mv">'+to+'</div></div><div><div class="ml">رقم المناقصة</div><div class="mv">'+(b.tender||'—')+'</div></div><div><div class="ml">صالح لمدة</div><div class="mv">'+vld+'</div></div></div>');
+  pw.document.write('<table><thead><tr><th style="width:32px">#</th><th>وصف البند</th><th style="width:65px">الكمية</th><th style="width:65px">الوحدة</th><th style="width:105px">سعر الوحدة (ريال)</th><th style="width:115px">الإجمالي (ريال)</th></tr></thead><tbody>'+rows+'</tbody></table>');
+  if(disc>0)pw.document.write('<div class="tr dc"><span>خصم '+disc+'%</span><span>- '+da.toLocaleString('ar-SA')+' ريال</span></div>');
+  pw.document.write('<div class="tr"><span>المجموع قبل الضريبة</span><span>'+ad.toLocaleString('ar-SA')+' ريال</span></div>');
+  if(hasVat)pw.document.write('<div class="tr vt"><span>ضريبة القيمة المضافة 15%</span><span>'+vat.toLocaleString('ar-SA')+' ريال</span></div>');
+  pw.document.write('<div class="tr gr"><span>الإجمالي الكلي</span><span>'+grand.toLocaleString('ar-SA')+' ريال</span></div>');
+  if(nt)pw.document.write('<div class="notes">📝 '+nt+'</div>');
+  pw.document.write('<div class="sig"><div class="sb">توقيع مقدِّم العرض<br><br><br>_______________________<br><strong>'+co+'</strong></div><div class="sb">ختم واعتماد العميل<br><br><br>_______________________<br><strong>'+to+'</strong></div></div>');
+  pw.document.write('<script>window.onload=function(){setTimeout(function(){window.print();},400);}<\/script></body></html>');
+  pw.document.close();
+}
+
+// WIN PROBABILITY
+function renderWinTab(){
+  const b=gb(curId);if(!b)return;
+  if(b.ai){renderWinResult(b.ai);}
+  else{
+    document.getElementById('winCard').innerHTML=
+      '<div style="padding:24px;text-align:center;color:var(--muted)">'+
+      '<div style="font-size:32px;margin-bottom:10px">🎯</div>'+
+      '<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px">تحليل احتمالية الفوز بالذكاء الاصطناعي</div>'+
+      '<div style="font-size:12px;margin-bottom:16px;max-width:460px;margin-left:auto;margin-right:auto">'+
+      'يحلل الـ AI كراسة الشروط ('+((b.reqs||[]).length)+' بند) والعرض المالي ('+((b.offer||[]).length)+' بند) ويعطيك تقييماً احترافياً مع نقاط القوة والضعف والتوصيات.</div>'+
+      '<button class="btn btn-purple" onclick="runAI()">🤖 ابدأ التحليل</button>'+
+      '</div>';
+  }
+}
+
+async function runAI(){
+  const b=gb(curId);if(!b)return;
+  document.getElementById('winCard').innerHTML=
+    '<div style="padding:30px;text-align:center"><div class="spinner" style="margin:0 auto 12px;width:28px;height:28px;border-width:3px"></div>'+
+    '<div style="font-weight:700;font-size:13px">الذكاء الاصطناعي يحلل المناقصة...</div>'+
+    '<div style="font-size:11px;color:var(--muted);margin-top:4px" id="wldTxt">تحليل بنود الكراسة...</div></div>';
+  const steps=['تحليل بنود الكراسة...','تقييم العرض المالي...','مقارنة مع السوق...','تقييم نقاط القوة والضعف...','توليد التوصيات...'];
+  let si=0;const iv=setInterval(()=>{const el=document.getElementById('wldTxt');if(el&&si<steps.length)el.textContent=steps[si++];},1100);
+  try{
+    const reqs=(b.reqs||[]).map(r=>'- '+r.title+' ('+r.qty+' '+r.unit+')').join('\n')||'لا توجد متطلبات';
+    const offer=(b.offer||[]).map(r=>'- '+r.desc+': '+r.qty+' '+r.unit+' × '+r.price+' = '+(r.qty*r.price)).join('\n')||'لا يوجد عرض';
+    const tot=(b.offer||[]).reduce((s,r)=>s+(+r.qty||0)*(+r.price||0),0);
+    const comp=+document.getElementById('wp_comp').value;
+    const rel=+document.getElementById('wp_rel').value;
+    const exp=+document.getElementById('wp_exp').value;
+    const price=+document.getElementById('wp_price').value;
+    const tech=+document.getElementById('wp_tech').value;
+    const prop=+document.getElementById('wp_prop').value;
+    const xnotes=document.getElementById('wp_notes').value;
+    const cmpLbl=['','ضعيف','متوسط','قوي','قوي جداً','لا يُنافَس'];
+    const relLbl=['','لا علاقة','محدودة','جيدة','قوية','شراكة'];
+    const expLbl=['','ضعيف','جزئي','جيد','عالي','مثالي'];
+    const prcLbl=['','مرتفع جداً','أعلى من السوق','تنافسي','أقل من السوق','الأقل'];
+    const teLbl=['','<40%','40-60%','60-80%','80-95%','100%'];
+    const prLbl=['','لم يُعدّ','مسودة','جيد','قوي','استثنائي'];
+    const prompt='أنت خبير استشاري متخصص في المناقصات الحكومية السعودية. حلّل هذه المناقصة وأعطِ تقييماً احترافياً دقيقاً.\n\n== بيانات المناقصة ==\nالعنوان: '+b.title+'\nالعميل: '+b.client+'\nالشركة: '+b.sub+' (بيورمايندز)\nنوع المناقصة: '+b.type+'\nالقيمة: '+sarF(b.val)+'\nالموعد النهائي: '+ds(b.dl)+'\nالمنافسون: '+(b.comp||'غير محدد')+'\n\n== المتطلبات ('+(b.reqs||[]).length+' بند) ==\n'+reqs+'\n\n== العرض المالي ('+(b.offer||[]).length+' بند) ==\n'+offer+'\nإجمالي العرض: '+tot.toLocaleString('ar-SA')+' ريال'+(b.val&&tot>0?' ('+(tot/b.val*100).toFixed(0)+'% من قيمة المناقصة)':'')+'\n\n== التقييم اليدوي ==\nقوة المنافسين: '+comp+'/5 ('+cmpLbl[comp]+')\nعلاقتنا بالعميل: '+rel+'/5 ('+relLbl[rel]+')\nتوافق الخبرة: '+exp+'/5 ('+expLbl[exp]+')\nتنافسية السعر: '+price+'/5 ('+prcLbl[price]+')\nاستيفاء المتطلبات: '+tech+'/5 ('+teLbl[tech]+')\nجودة العرض الفني: '+prop+'/5 ('+prLbl[prop]+')\n'+(xnotes?'ملاحظات: '+xnotes:'')+'\n\n== المطلوب ==\nأعطِ تقييماً شاملاً يتضمن:\n1. score: نسبة 0-100 تمثل احتمالية الفوز الحقيقية\n2. verdict: من ("فرصة ممتازة" أو "فرصة جيدة" أو "فرصة متوسطة" أو "فرصة ضعيفة" أو "غير مُوصى بالتقديم")\n3. factors: مصفوفة 5 عوامل كل منها {name, score(0-100), note}\n4. strengths: مصفوفة 2-3 نقاط قوة\n5. weaknesses: مصفوفة 2-3 نقاط ضعف\n6. tips: مصفوفة 3-4 توصيات عملية قابلة للتنفيذ\n7. summary: ملخص تحليلي 2-3 جمل\n\nأجب بـ JSON فقط:';
+    const text=await callAI([{role:'user',content:prompt}],1600);
+    clearInterval(iv);
+    const clean=text.replace(/```json|```/g,'').trim();
+    let an;
+    try{an=JSON.parse(clean);}
+    catch{an={score:calcQS(),verdict:'فرصة متوسطة',factors:[{name:'الخبرة الفنية',score:exp*20,note:'بناءً على التقييم'},{name:'تنافسية السعر',score:price*20,note:'بناءً على التقييم'},{name:'استيفاء المتطلبات',score:tech*20,note:'بناءً على التقييم'},{name:'علاقة العميل',score:rel*20,note:'بناءً على التقييم'},{name:'جودة العرض',score:prop*20,note:'بناءً على التقييم'}],strengths:['لديكم خبرة في هذا المجال'],weaknesses:['يحتاج مراجعة إضافية'],tips:['تعزيز العلاقة مع العميل','مراجعة السعر المقدَّم'],summary:'تم التحليل بناءً على المعطيات المتاحة.'};}
+    an.at=new Date().toISOString();
+    b.ai=an;b.prob=an.score;
+    save();renderWinResult(an);renderAll();
+    toast('✓ اكتمل التحليل: '+an.score+'%');
+  }catch(err){
+    clearInterval(iv);
+    document.getElementById('winCard').innerHTML='<div style="padding:20px;text-align:center;color:var(--danger)"><div style="font-size:24px;margin-bottom:8px">⚠️</div><div style="font-weight:700">تعذّر الاتصال بالذكاء الاصطناعي</div><div style="font-size:12px;color:var(--muted);margin:8px 0 14px">تحقق من الاتصال وأعد المحاولة</div><button class="btn btn-ghost btn-sm" onclick="runAI()">🔄 إعادة المحاولة</button></div>';
+  }
+}
+
+function calcQS(){
+  const inv=6-(+document.getElementById('wp_comp').value);
+  const scores=[inv,+document.getElementById('wp_rel').value,+document.getElementById('wp_exp').value,+document.getElementById('wp_price').value,+document.getElementById('wp_tech').value,+document.getElementById('wp_prop').value];
+  return Math.min(95,Math.max(5,Math.round((scores[0]*15+scores[1]*10+scores[2]*25+scores[3]*20+scores[4]*20+scores[5]*10)/5*4)));
+}
+
+function quickScore(){
+  const b=gb(curId);if(!b)return;
+  const score=calcQS();
+  const verdict=score>=70?'فرصة ممتازة':score>=55?'فرصة جيدة':score>=40?'فرصة متوسطة':score>=25?'فرصة ضعيفة':'غير مُوصى بالتقديم';
+  const inv=6-(+document.getElementById('wp_comp').value);
+  const an={score,verdict,isQuick:true,at:new Date().toISOString(),
+    factors:[
+      {name:'الخبرة الفنية',score:(+document.getElementById('wp_exp').value)*20,note:'مدى توافق تخصصكم مع متطلبات المناقصة'},
+      {name:'تنافسية السعر',score:(+document.getElementById('wp_price').value)*20,note:'موقع سعركم مقارنة بالسوق'},
+      {name:'استيفاء المتطلبات',score:(+document.getElementById('wp_tech').value)*20,note:'نسبة تغطية البنود الفنية'},
+      {name:'العلاقة بالعميل',score:(+document.getElementById('wp_rel').value)*20,note:'مستوى الثقة والتعاون السابق'},
+      {name:'جودة العرض الفني',score:(+document.getElementById('wp_prop').value)*20,note:'احترافية الوثيقة المقدَّمة'},
+    ],
+    strengths:score>=50?['تقييم إيجابي بناءً على المعطيات']:['يحتاج مراجعة شاملة'],
+    weaknesses:inv<=3?['المنافسون أقوياء في هذا المجال']:['راجع نقاط الضعف قبل التقديم'],
+    tips:['راجع وعزّز نقاط الضعف','اعمل على تقوية العلاقة مع العميل','تأكد من تغطية 100% من المتطلبات'],
+    summary:'التقييم السريع يشير إلى '+verdict+' بنسبة '+score+'%. يُنصح بإجراء التحليل الكامل للحصول على توصيات أدق.'
+  };
+  b.ai=an;b.prob=score;save();renderWinResult(an);renderAll();toast('⚡ تقييم سريع: '+score+'%');
+}
+
+function renderWinResult(a){
+  const c=a.score>=70?'var(--success)':a.score>=45?'var(--warning)':'var(--danger)';
+  const vbg=a.score>=70?'rgba(34,197,94,.15)':a.score>=45?'rgba(245,158,11,.15)':'rgba(239,68,68,.15)';
+  const R=44,circ=2*Math.PI*R,dash=circ*(a.score/100),gap=circ-dash;
+  const fHTML=(a.factors||[]).map(f=>{
+    const fc=f.score>=70?'var(--success)':f.score>=45?'var(--warning)':'var(--danger)';
+    return '<div class="wf-item"><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:12px;font-weight:700">'+f.name+'</div><div style="font-size:12px;font-weight:800;color:'+fc+'">'+f.score+'%</div></div><div class="wf-bar"><div class="wf-fill" style="width:'+f.score+'%;background:'+fc+'"></div></div>'+(f.note?'<div style="font-size:11px;color:var(--muted)">'+f.note+'</div>':'')+'</div>';
+  }).join('');
+  const sHTML=(a.strengths||[]).map(s=>'<div class="insight str">✅ '+s+'</div>').join('');
+  const wHTML=(a.weaknesses||[]).map(w=>'<div class="insight wk">⚠️ '+w+'</div>').join('');
+  const tHTML=(a.tips||[]).map(t=>'<div class="insight tip">💡 '+t+'</div>').join('');
+  document.getElementById('winCard').innerHTML=
+    '<div class="win-hdr">'+
+      '<div class="win-circle">'+
+        '<svg viewBox="0 0 100 100" width="90" height="90">'+
+          '<circle cx="50" cy="50" r="'+R+'" fill="none" stroke="var(--border)" stroke-width="8"/>'+
+          '<circle cx="50" cy="50" r="'+R+'" fill="none" stroke="'+c+'" stroke-width="8" stroke-dasharray="'+dash+' '+gap+'" stroke-linecap="round"/>'+
+        '</svg>'+
+        '<div class="win-num"><div style="font-size:22px;font-weight:800;color:'+c+'">'+a.score+'</div><div style="font-size:10px;color:var(--muted)">%</div></div>'+
+      '</div>'+
+      '<div style="flex:1">'+
+        '<div style="font-size:15px;font-weight:800;margin-bottom:6px">احتمالية الفوز '+(a.isQuick?'(تقييم سريع)':'(تحليل AI)')+'</div>'+
+        '<div style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:'+vbg+';color:'+c+'">'+
+          (a.score>=70?'🏆':a.score>=55?'👍':a.score>=40?'🤔':a.score>=25?'⚠️':'❌')+' '+a.verdict+
+        '</div>'+
+        (a.summary?'<div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6;max-width:480px">'+a.summary+'</div>':'')+
+        '<div style="font-size:10px;color:var(--muted);margin-top:6px">'+(a.isQuick?'⚡ تقييم سريع':'🤖 تحليل AI')+' • '+(a.at?new Date(a.at).toLocaleDateString('ar-SA',{day:'2-digit',month:'short',year:'numeric'}):'')+'</div>'+
+      '</div>'+
+      '<div style="display:flex;flex-direction:column;gap:6px">'+
+        '<button class="btn btn-purple btn-sm" onclick="runAI()">🤖 إعادة التحليل</button>'+
+        '<button class="btn btn-ghost btn-sm" onclick="clearWin()">🗑 مسح</button>'+
+      '</div>'+
+    '</div>'+
+    '<div style="padding:14px 22px 10px;border-bottom:1px solid var(--border)"><div style="font-size:11px;font-weight:800;color:var(--accent);margin-bottom:12px">📊 العوامل التفصيلية</div><div class="win-factors" style="padding:0">'+fHTML+'</div></div>'+
+    '<div class="win-insights" style="padding:14px 22px">'+
+      '<div style="font-size:11px;font-weight:800;color:var(--success);margin-bottom:6px">✅ نقاط القوة</div>'+sHTML+
+      '<div style="font-size:11px;font-weight:800;color:var(--danger);margin-top:10px;margin-bottom:6px">⚠️ نقاط الضعف</div>'+wHTML+
+      '<div style="font-size:11px;font-weight:800;color:var(--info);margin-top:10px;margin-bottom:6px">💡 التوصيات</div>'+tHTML+
+    '</div>';
+}
+
+function clearWin(){
+  const b=gb(curId);if(!b)return;
+  if(!confirm('هل تريد مسح نتيجة التحليل؟'))return;
+  b.ai=null;save();renderWinTab();renderAll();
+}
+
+// MODAL HELPERS
+function renderStageSel(sel){
+  document.getElementById('stageSel').innerHTML=STAGES.map(s=>'<div class="stage-opt '+(sel===s?'selected':'')+'" style="color:'+SC[s]+'" onclick="selStage(\''+s+'\',this)">'+SI[s]+' '+s+'</div>').join('');
+  document.getElementById('stageSel').dataset.sel=sel;
+  document.getElementById('lossGrp').style.display=sel==='خسرنا'?'block':'none';
+}
+function selStage(s,el){
+  document.querySelectorAll('.stage-opt').forEach(e=>e.classList.remove('selected'));el.classList.add('selected');
+  document.getElementById('stageSel').dataset.sel=s;
+  document.getElementById('lossGrp').style.display=s==='خسرنا'?'block':'none';
+}
+
+// ---- KRASSAT UPLOAD IN ADD MODAL ----
+let krassatData = null;
+
+function handleKrassatUpload(ev){
+  const file = ev.target.files[0]; if(!file) return;
+  krassatData = null;
+  // UI: show processing
+  const zone = document.getElementById('krassatZone');
+  zone.classList.add('has-file');
+  document.getElementById('krassatIcon').textContent = '📄';
+  document.getElementById('krassatTitle').textContent = file.name;
+  document.getElementById('krassatSub').textContent = 'جاري القراءة...';
+  document.getElementById('krassatResult').classList.remove('show');
+  document.getElementById('krassatProc').classList.add('show');
+  setKrassatProg(10,'جاري قراءة الملف...');
+  // Read file
+  const reader = new FileReader();
+  reader.onload = async function(e){
+    try{
+      setKrassatProg(25,'استخراج النص...');
+      let txt = '';
+      if(file.type === 'application/pdf' || file.name.endsWith('.pdf')){
+        const bytes = new Uint8Array(e.target.result);
+        const raw = new TextDecoder('utf-8',{fatal:false}).decode(bytes);
+        const re = /[\u0600-\u06FF\w\s\n.,:\-\/():؛،؟!]/;
+        for(let i=0;i<raw.length;i++){if(re.test(raw[i]))txt+=raw[i];}
+        txt = txt.replace(/\s+/g,' ').trim();
+      } else {
+        txt = new TextDecoder('utf-8',{fatal:false}).decode(new Uint8Array(e.target.result));
+      }
+      if(txt.length < 50) txt = 'ملف: ' + file.name;
+      setKrassatProg(50,'تحليل محتوى الكراسة...');
+      await extractKrassatData(txt, file.name);
+    } catch(err){
+      console.error(err);
+      stopKrassatProc('حدث خطأ أثناء القراءة');
+    }
+  };
+  if(file.type === 'application/pdf' || file.name.endsWith('.pdf')){
+    reader.readAsArrayBuffer(file);
+  } else {
+    reader.readAsArrayBuffer(file);
+  }
+  ev.target.value = '';
+}
+
+function setKrassatProg(pct, label){
+  document.getElementById('krassatProg').style.width = pct + '%';
+  document.getElementById('krassatStep').textContent = label;
+}
+
+function stopKrassatProc(msg){
+  document.getElementById('krassatProc').classList.remove('show');
+  document.getElementById('krassatSub').textContent = msg || 'جاهز';
+}
+
+async function extractKrassatData(txt, fname){
+  setKrassatProg(65,'الذكاء الاصطناعي يستخرج البيانات...');
+  const prompt = `أنت خبير مناقصات حكومية سعودية متخصص. استخرج جميع المعلومات الأساسية من كراسة الشروط التالية.
+
+المطلوب استخراجه:
+1. title: اسم المناقصة أو الموضوع الرئيسي
+2. tender: رقم المناقصة أو رقم الإعلان
+3. client: اسم الجهة الحكومية أو العميل
+4. type: نوع المناقصة (منافسة عامة / منافسة محدودة / شراء مباشر / اتفاقية إطارية)
+5. val: القيمة التقديرية للمناقصة بالريال (رقم فقط بدون عملة)
+6. bond: قيمة التأمين الابتدائي بالريال (رقم فقط)
+7. dl: الموعد النهائي للتقديم بصيغة YYYY-MM-DD
+8. open: تاريخ فتح المظاريف بصيغة YYYY-MM-DD
+9. pub: تاريخ نشر المناقصة بصيغة YYYY-MM-DD
+10. reqs: مصفوفة من أهم 10 متطلبات قابلة للتسعير، كل متطلب: {title, qty, unit, cat}
+    - unit من: وحدة، ساعة، يوم، شهر، متر، م²، قطعة، مجموعة، باقة، مشروع
+    - cat من: إنتاج، تصميم، فعاليات، طباعة، تقني، إداري، أخرى
+11. notes: ملاحظات مهمة مستخلصة من الكراسة (فقرة قصيرة)
+12. lot: رقم اللوت إن وُجد
+
+اسم الملف: ${fname}
+النص (أول 8000 حرف):
+${txt.slice(0,8000)}
+
+أجب بـ JSON فقط بدون أي نص خارجه:`;
+
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})
+    });
+    const data = await res.json();
+    const text = data.content&&data.content[0] ? data.content[0].text||'' : '';
+    setKrassatProg(90,'معالجة النتائج...');
+    const clean = text.replace(/```json|```/g,'').trim();
+    let parsed;
+    try{ parsed = JSON.parse(clean); }
+    catch{ parsed = {title:fname.replace(/\.(pdf|docx|doc)$/i,''),notes:'تعذّر التحليل التلقائي - راجع الحقول يدوياً'}; }
+    krassatData = parsed;
+    setKrassatProg(100,'اكتمل الاستخراج!');
+    setTimeout(()=>{
+      document.getElementById('krassatProc').classList.remove('show');
+      showKrassatPreview(parsed);
+    },600);
+  } catch(err){
+    console.error(err);
+    stopKrassatProc('⚠️ تعذّر الاتصال - تحقق من الإنترنت');
+    document.getElementById('krassatZone').classList.remove('has-file');
+    document.getElementById('krassatIcon').textContent = '📂';
+    document.getElementById('krassatTitle').textContent = 'ارفع كراسة الشروط هنا';
+    document.getElementById('krassatSub').textContent = 'PDF أو Word — الذكاء الاصطناعي يستخرج البيانات ويملأ الحقول تلقائياً';
+  }
+}
+
+function showKrassatPreview(d){
+  const rows = [
+    ['اسم المناقصة', d.title],
+    ['رقم المناقصة', d.tender],
+    ['رقم اللوت', d.lot],
+    ['العميل / الجهة', d.client],
+    ['نوع المناقصة', d.type],
+    ['القيمة التقديرية', d.val ? Number(d.val).toLocaleString('ar-SA') + ' ريال' : null],
+    ['التأمين الابتدائي', d.bond ? Number(d.bond).toLocaleString('ar-SA') + ' ريال' : null],
+    ['الموعد النهائي', d.dl ? new Date(d.dl).toLocaleDateString('ar-SA',{day:'2-digit',month:'long',year:'numeric'}) : null],
+    ['فتح المظاريف', d.open ? new Date(d.open).toLocaleDateString('ar-SA',{day:'2-digit',month:'long',year:'numeric'}) : null],
+    ['المتطلبات المستخرجة', d.reqs&&d.reqs.length ? d.reqs.length + ' بند' : null],
+  ].filter(r=>r[1]);
+
+  document.getElementById('krassatPreview').innerHTML = rows.map(([lbl,val])=>
+    '<div class="extracted-field"><div class="extracted-label">'+lbl+'</div><div class="extracted-value">'+val+'</div></div>'
+  ).join('');
+  document.getElementById('krassatResult').classList.add('show');
+  document.getElementById('krassatSub').textContent = 'تم الاستخراج — اضغط "ملء الحقول" للمتابعة';
+}
+
+function fillFromKrassat(){
+  if(!krassatData) return;
+  const d = krassatData;
+  const setV = (id,v) => { const el=document.getElementById(id); if(el&&v) el.value=v; };
+  setV('f_title', d.title);
+  setV('f_tender', d.tender);
+  setV('f_lot', d.lot);
+  setV('f_client', d.client);
+  setV('f_val', d.val);
+  setV('f_bond', d.bond);
+  setV('f_pub', d.pub);
+  setV('f_dl', d.dl);
+  setV('f_open', d.open);
+  setV('f_notes', d.notes);
+  if(d.type){
+    const typeEl = document.getElementById('f_type');
+    const opts = ['منافسة عامة','منافسة محدودة','شراء مباشر','اتفاقية إطارية'];
+    const match = opts.find(o=>d.type.includes(o)||o.includes(d.type));
+    if(match) typeEl.value = match;
+  }
+  // Store extracted reqs for later use
+  if(d.reqs && d.reqs.length) krassatData._reqs = d.reqs;
+  // Visual feedback
+  document.getElementById('krassatResult').innerHTML='<div style="text-align:center;padding:8px;color:var(--success);font-weight:700;font-size:13px">✅ تم ملء جميع الحقول تلقائياً — راجعها وعدّلها حسب الحاجة</div>';
+  // Scroll to first field
+  document.getElementById('f_title').scrollIntoView({behavior:'smooth',block:'center'});
+  toast('✅ تم ملء '+Object.keys(krassatData).filter(k=>krassatData[k]).length+' حقل من الكراسة');
+}
+
+function clearKrassat(){
+  krassatData = null;
+  document.getElementById('krassatZone').classList.remove('has-file');
+  document.getElementById('krassatIcon').textContent = '📂';
+  document.getElementById('krassatTitle').textContent = 'ارفع كراسة الشروط هنا';
+  document.getElementById('krassatSub').textContent = 'PDF أو Word — الذكاء الاصطناعي يستخرج البيانات ويملأ الحقول تلقائياً';
+  document.getElementById('krassatResult').classList.remove('show');
+  document.getElementById('krassatProc').classList.remove('show');
+}
+
+function openAddModal(){
+  editId=null;document.getElementById('mTitle').textContent='إضافة مناقصة جديدة';
+  ['f_title','f_tender','f_lot','f_client','f_val','f_bond','f_notes','f_mgr','f_comp','f_link','f_winp'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f_src').value='منصة اعتماد';
+  document.getElementById('f_type').value='منافسة عامة';
+  document.getElementById('f_sub').value='بيورمايندز (المجموعة)';
+  ['f_prob','f_pub','f_dl','f_open','f_loss'].forEach(id=>document.getElementById(id).value='');
+  clearKrassat();
+  renderStageSel('جديدة');
+  document.getElementById('addModal').classList.add('open');
+}
+
+function openEdit(id){
+  const b=gb(id);if(!b)return;editId=id;
+  document.getElementById('mTitle').textContent='تعديل المناقصة';
+  [['f_title',b.title],['f_tender',b.tender||''],['f_lot',b.lot||''],['f_client',b.client||''],
+   ['f_src',b.src||'منصة اعتماد'],['f_type',b.type||'منافسة عامة'],['f_sub',b.sub||'بيورمايندز (المجموعة)'],
+   ['f_val',b.val||''],['f_bond',b.bond||''],['f_pub',b.pub||''],['f_dl',b.dl||''],['f_open',b.open||''],
+   ['f_mgr',b.mgr||''],['f_prob',b.prob||''],['f_comp',b.comp||''],['f_loss',b.loss||''],
+   ['f_winp',b.winp||''],['f_link',b.link||''],['f_notes',b.notes||'']
+  ].forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v;});
+  renderStageSel(b.stage||'جديدة');
+  document.getElementById('addModal').classList.add('open');
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function saveBid(){
+  const stage=document.getElementById('stageSel').dataset.sel||'جديدة';
+  const g=id=>document.getElementById(id).value.trim();
+  const data={
+    tender:g('f_tender'),lot:g('f_lot'),title:g('f_title'),client:g('f_client'),
+    src:document.getElementById('f_src').value,type:document.getElementById('f_type').value,
+    sub:document.getElementById('f_sub').value,
+    val:document.getElementById('f_val').value,bond:document.getElementById('f_bond').value,
+    pub:document.getElementById('f_pub').value,dl:document.getElementById('f_dl').value,
+    open:document.getElementById('f_open').value,mgr:g('f_mgr'),
+    prob:document.getElementById('f_prob').value,comp:g('f_comp'),
+    loss:document.getElementById('f_loss').value,winp:document.getElementById('f_winp').value,
+    link:g('f_link'),notes:g('f_notes'),stage
+  };
+  if(!data.title){alert('يرجى إدخال اسم المناقصة');return;}
+  if(editId){const i=bids.findIndex(b=>b.id===editId);bids[i]={...bids[i],...data};}
+  else{
+    // Include extracted requirements from krassat if available
+    const extractedReqs = (krassatData&&krassatData._reqs) ?
+      krassatData._reqs.map(r=>({id:uid(),title:r.title||'',qty:r.qty||1,unit:r.unit||'وحدة',cat:r.cat||'أخرى',chk:true})) : [];
+    bids.unshift({id:uid(),...data,reqs:extractedReqs,offer:[],ai:null,cr:new Date().toISOString()});
+    if(extractedReqs.length) toast('✅ تم حفظ المناقصة مع '+extractedReqs.length+' متطلب مستخرج من الكراسة');
+  }
+  krassatData = null;
+  save();closeModal('addModal');renderAll();
+}
+
+function delBid(id){if(!confirm('هل أنت متأكد من الحذف؟'))return;bids=bids.filter(b=>b.id!==id);save();renderAll();}
+
+// REPORTS
+function renderReports(){
+  const aw=bids.filter(b=>b.stage==='رُسّينا'),lo=bids.filter(b=>b.stage==='خسرنا');
+  const act=bids.filter(b=>!TERM.includes(b.stage));
+  const done=aw.length+lo.length,wr=done>0?Math.round((aw.length/done)*100):0;
+  const awv=aw.reduce((s,b)=>s+(+b.val||0),0),lov=lo.reduce((s,b)=>s+(+b.val||0),0),acv=act.reduce((s,b)=>s+(+b.val||0),0);
+  const subs={};bids.forEach(b=>{if(!subs[b.sub])subs[b.sub]={tot:0,won:0,ai:[]};subs[b.sub].tot++;if(b.stage==='رُسّينا')subs[b.sub].won++;if(b.ai&&b.ai.score)subs[b.sub].ai.push(b.ai.score);});
+  const lossR={};lo.forEach(b=>{const r=b.loss||'غير محدد';lossR[r]=(lossR[r]||0)+1;});
+  const maxL=Math.max(...Object.values(lossR),1);
+  const anl=bids.filter(b=>b.ai&&b.ai.score);
+  const aiAvg=anl.length?Math.round(anl.reduce((s,b)=>s+b.ai.score,0)/anl.length):null;
+  document.getElementById('rptContent').innerHTML=
+    '<div class="report-card" style="grid-column:1/-1"><div class="report-card-title">📊 ملخص الأداء</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">'+
+    rptNum(wr+'%','نسبة الفوز','var(--accent2)')+rptNum((awv/1000000).toFixed(1)+'م ريال','عقود مُرسّاة','var(--success)')+
+    rptNum((lov/1000000).toFixed(1)+'م ريال','قيمة الخسائر','var(--danger)')+rptNum(aiAvg!==null?aiAvg+'%':'—','متوسط تحليل AI ('+anl.length+')','var(--purple)')+
+    '</div></div>'+
+    '<div class="report-card"><div class="report-card-title">🏢 الأداء بالشركة</div>'+
+    Object.entries(subs).map(([s,d])=>'<div class="rrow"><span>'+s+'</span><span style="font-weight:700">'+d.won+'/'+d.tot+' ('+(d.tot>0?Math.round((d.won/d.tot)*100):0)+'%)'+(d.ai.length?' <span style="color:var(--purple);font-size:10px">AI:'+Math.round(d.ai.reduce((a,b)=>a+b,0)/d.ai.length)+'%</span>':'')+'</span></div>').join('')+
+    '</div>'+
+    '<div class="report-card"><div class="report-card-title">❌ أسباب الخسارة</div>'+
+    (!Object.keys(lossR).length?'<div style="color:var(--muted);text-align:center;padding:20px">لا توجد خسائر بعد</div>':Object.entries(lossR).sort((a,b)=>b[1]-a[1]).map(([r,c])=>'<div class="lbar-row"><div class="lbar-label">'+r+'</div><div class="lbar-track"><div class="lbar-fill" style="width:'+Math.round((c/maxL)*100)+'%"></div></div><span style="color:var(--muted);font-weight:700">'+c+'</span></div>').join(''))+
+    '</div>'+
+    '<div class="report-card"><div class="report-card-title">📋 توزيع المراحل</div>'+
+    STAGES.map(s=>{const cnt=bids.filter(b=>b.stage===s).length;const v=bids.filter(b=>b.stage===s).reduce((sum,b)=>sum+(+b.val||0),0);return cnt?'<div class="rrow"><span style="color:'+SC[s]+';font-weight:700">'+SI[s]+' '+s+'</span><span style="font-weight:700">'+cnt+' — '+sar(v)+'</span></div>':''}).join('')+
+    '</div>'+
+    (anl.length?'<div class="report-card" style="grid-column:1/3"><div class="report-card-title">🎯 مقارنة تحليل AI</div>'+anl.sort((a,b)=>(b.ai.score||0)-(a.ai.score||0)).map(b=>'<div class="rrow" style="cursor:pointer" onclick="openDetail(\''+b.id+'\',\'win\')"><span style="font-weight:600">'+b.title+'</span><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="width:90px"><div class="progress-fill" style="width:'+b.ai.score+'%;background:'+(b.ai.score>=70?'var(--success)':b.ai.score>=45?'var(--warning)':'var(--danger)')+'"></div></div><span style="font-weight:800;color:'+(b.ai.score>=70?'var(--success)':b.ai.score>=45?'var(--warning)':'var(--danger)')+'">'+b.ai.score+'%</span><span style="font-size:10px;color:var(--muted)">'+b.ai.verdict+'</span></div></div>').join('')+'</div>':'');
+}
+function rptNum(v,l,c){return '<div style="text-align:center;padding:12px;background:var(--surface2);border-radius:8px"><div style="font-size:22px;font-weight:800;color:'+c+'">'+v+'</div><div style="font-size:11px;color:var(--muted);margin-top:3px">'+l+'</div></div>';}
+
+// REMINDERS
+function renderRem(){
+  const urg=bids.filter(b=>{if(TERM.includes(b.stage))return false;const d=du(b.dl);return d!==null&&d>=0&&d<=5;});
+  const soon=bids.filter(b=>{if(TERM.includes(b.stage))return false;const d=du(b.dl);return d!==null&&d>5&&d<=14;});
+  const opn=bids.filter(b=>{if(b.stage!=='مقدمة')return false;const d=du(b.open);return d!==null&&d>=0&&d<=14;});
+  function card(b,clr){
+    const days=du(b.dl);
+    const lbl=days===0?'اليوم!':days===1?'غداً!':days+'أيام';
+    return '<div style="background:var(--surface);border:1px solid var(--border);border-right:3px solid '+clr+';border-radius:8px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-bottom:6px" onclick="openDetail(\''+b.id+'\')"><div><div style="font-weight:700;font-size:13px">'+b.title+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px">'+b.client+' • '+b.sub+'</div></div><div style="text-align:left"><div style="font-size:12px;font-weight:800;color:'+clr+'">'+lbl+'</div><div style="font-size:10px;color:var(--muted)">'+ds(b.dl)+'</div></div></div>';
+  }
+  let h='';
+  if(urg.length)h+='<div style="margin-bottom:16px"><div style="font-size:12px;font-weight:800;color:var(--danger);margin-bottom:8px">🚨 عاجل — خلال 5 أيام ('+urg.length+')</div>'+urg.map(b=>card(b,'#ef4444')).join('')+'</div>';
+  if(soon.length)h+='<div style="margin-bottom:16px"><div style="font-size:12px;font-weight:800;color:var(--warning);margin-bottom:8px">⏰ قريباً — خلال أسبوعين ('+soon.length+')</div>'+soon.map(b=>card(b,'#f59e0b')).join('')+'</div>';
+  if(opn.length)h+='<div style="margin-bottom:16px"><div style="font-size:12px;font-weight:800;color:var(--info);margin-bottom:8px">📂 فتح مظاريف قريب ('+opn.length+')</div>'+opn.map(b=>'<div style="background:var(--surface);border:1px solid var(--border);border-right:3px solid #3b82f6;border-radius:8px;padding:11px 14px;cursor:pointer;margin-bottom:6px" onclick="openDetail(\''+b.id+'\')"><div style="font-weight:700">'+b.title+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px">فتح المظاريف: '+ds(b.open)+'</div></div>').join('')+'</div>';
+  if(!h)h='<div class="empty-state"><div style="font-size:36px;margin-bottom:10px">✅</div><p>لا توجد مناقصات عاجلة</p></div>';
+  document.getElementById('remContent').innerHTML=h;
+}
+
+// EXPORT
+function exportCSV(){
+  const h=['رقم المناقصة','اللوت','الاسم','العميل','المصدر','النوع','الشركة','المرحلة','القيمة','التأمين','تاريخ النشر','الموعد النهائي','فتح المظاريف','المدير','الاحتمالية','تحليل AI','حكم AI','المنافسون','سبب الخسارة','سعر الفائز','عدد المتطلبات','الملاحظات'];
+  const rows=bids.map(b=>[b.tender,b.lot,b.title,b.client,b.src,b.type,b.sub,b.stage,b.val,b.bond,b.pub,b.dl,b.open,b.mgr,b.prob,b.ai&&b.ai.score||'',b.ai&&b.ai.verdict||'',b.comp,b.loss,b.winp,(b.reqs||[]).length,b.notes].map(v=>'"'+(v||'').toString().replace(/"/g,'""')+'"'));
+  const csv='\uFEFF'+[h,...rows].map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='pureminds-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+
+function toast(msg){
+  const old=document.querySelector('.toast');if(old)old.remove();
+  const t=document.createElement('div');t.className='toast';
+  t.style.background=msg.includes('تعذّر')||msg.includes('خطأ')?'var(--danger)':'var(--success)';
+  t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},2500);
+}
+
+renderAll();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const COL_DEFS=[
+  {f:'tender', labels:['رقم المناقصة','رقم اعتماد','tender','رقم العطاء'],type:'text'},
+  {f:'lot',    labels:['اللوت','رقم اللوت','lot','الباقة'],type:'text'},
+  {f:'title',  labels:['اسم المناقصة','العنوان','الموضوع','title','اسم العطاء','وصف المناقصة'],type:'text'},
+  {f:'client', labels:['العميل','الجهة','الجهة الحكومية','client','الجهة المستفيدة'],type:'text'},
+  {f:'src',    labels:['المصدر','مصدر المناقصة','source','المنصة'],type:'text'},
+  {f:'type',   labels:['نوع المناقصة','النوع','type','نوع العطاء'],type:'text'},
+  {f:'sub',    labels:['الشركة','الشركة المنفذة','subsidiary','الفرع'],type:'text'},
+  {f:'stage',  labels:['المرحلة','الحالة','stage','الوضع'],type:'text'},
+  {f:'val',    labels:['القيمة','قيمة المناقصة','المبلغ','value','السعر التقديري'],type:'number'},
+  {f:'bond',   labels:['التأمين','التأمين الابتدائي','bond','كفالة العطاء'],type:'number'},
+  {f:'pub',    labels:['تاريخ النشر','تاريخ الإعلان','published','تاريخ الطرح'],type:'date'},
+  {f:'dl',     labels:['الموعد النهائي','آخر موعد','deadline','تاريخ التقديم'],type:'date'},
+  {f:'open',   labels:['فتح المظاريف','تاريخ الفتح','opening','تاريخ فتح العروض'],type:'date'},
+  {f:'mgr',    labels:['المدير','مدير تطوير الأعمال','manager','المسؤول'],type:'text'},
+  {f:'prob',   labels:['الاحتمالية','احتمالية الفوز','probability','نسبة الفوز'],type:'number'},
+  {f:'comp',   labels:['المنافسون','المنافسين','competitors','الشركات المنافسة'],type:'text'},
+  {f:'notes',  labels:['الملاحظات','ملاحظات','notes','تفاصيل','وصف'],type:'text'},
+];
+const FN={tender:'رقم المناقصة',lot:'رقم اللوت',title:'اسم المناقصة',client:'العميل',src:'المصدر',type:'نوع المناقصة',sub:'الشركة المنفذة',stage:'المرحلة',val:'القيمة (ريال)',bond:'التأمين (ريال)',pub:'تاريخ النشر',dl:'الموعد النهائي',open:'فتح المظاريف',mgr:'المدير',prob:'الاحتمالية %',comp:'المنافسون',notes:'الملاحظات'};
+
+let impWB=null,impRows=[],impHdrs=[],impMap={};
+
+function initImportModal(){
+  const el=document.getElementById('colMapList');
+  if(el&&!el.innerHTML)el.innerHTML=COL_DEFS.map(c=>`<div style="display:flex;align-items:center;gap:5px;padding:1px 0"><span style="color:var(--accent);font-size:10px;font-weight:700;min-width:120px">${FN[c.f]}</span><span style="font-size:10px;color:var(--muted)">${c.type==='date'?'📅':c.type==='number'?'🔢':'📝'}</span></div>`).join('');
+}
+
+function openImportModal(){resetImport();initImportModal();document.getElementById('importModal').classList.add('open');}
+
+function resetImport(){
+  impWB=null;impRows=[];impHdrs=[];impMap={};
+  ['imp_step2','imp_step3'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('impBtn').style.display='none';
+  document.getElementById('impResetBtn').style.display='none';
+  document.getElementById('impProc').style.display='none';
+  document.getElementById('imp_step1').style.display='block';
+  document.getElementById('impZone').style.borderColor='var(--border)';
+  document.getElementById('colMapper').innerHTML='';
+  document.getElementById('impPreviewHead').innerHTML='';
+  document.getElementById('impPreviewBody').innerHTML='';
+}
+
+function handleExcelDrop(ev){
+  ev.preventDefault();
+  ev.currentTarget.style.borderColor='var(--border)';
+  const f=ev.dataTransfer.files[0];
+  if(f)processExcelFile(f);
+}
+function handleExcelFile(ev){
+  const f=ev.target.files[0];if(f)processExcelFile(f);ev.target.value='';
+}
+
+function processExcelFile(file){
+  if(!file.name.match(/\.(xlsx|xls)$/i)){toast('❌ الملف يجب أن يكون Excel');return;}
+  document.getElementById('impProc').style.display='block';
+  setIP(20,'جاري فتح الملف...');
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      setIP(50,'قراءة البيانات...');
+      const data=new Uint8Array(e.target.result);
+      impWB=XLSX.read(data,{type:'array',cellDates:true});
+      setIP(75,'تحليل الأعمدة...');
+      const sheet=impWB.Sheets[impWB.SheetNames[0]];
+      const json=XLSX.utils.sheet_to_json(sheet,{header:1,raw:false,dateNF:'YYYY-MM-DD'});
+      if(!json||json.length<2)throw new Error('الملف فارغ أو لا يحتوي على بيانات');
+      impHdrs=(json[0]||[]).map(h=>(h||'').toString().trim());
+      impRows=json.slice(1).filter(row=>row.some(c=>c!==null&&c!==undefined&&c!==''));
+      setIP(90,'بناء المعاينة...');
+      autoMap();
+      setTimeout(()=>{
+        document.getElementById('impProc').style.display='none';
+        document.getElementById('imp_step2').style.display='block';
+        document.getElementById('imp_step3').style.display='block';
+        document.getElementById('impBtn').style.display='flex';
+        document.getElementById('impResetBtn').style.display='flex';
+        document.getElementById('impRowCount').textContent=impRows.length;
+        renderColMapper();
+        renderPreview();
+        updateSummary();
+      },400);
+    }catch(err){
+      document.getElementById('impProc').style.display='none';
+      toast('❌ '+(err.message||'تعذّر قراءة الملف'));
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function setIP(pct,txt){
+  document.getElementById('impProgBar').style.width=pct+'%';
+  document.getElementById('impProcTxt').textContent=txt;
+}
+
+function autoMap(){
+  impMap={};
+  COL_DEFS.forEach(def=>{
+    for(let i=0;i<impHdrs.length;i++){
+      const h=impHdrs[i].toLowerCase().trim();
+      if(def.labels.some(lbl=>{const l=lbl.toLowerCase();return h===l||h.includes(l)||l.includes(h);})){
+        if(!Object.values(impMap).includes(i)){impMap[def.f]=i;break;}
+      }
+    }
+  });
+}
+
+function renderColMapper(){
+  const c=document.getElementById('colMapper');
+  const opts=['(تجاهل)',...impHdrs.map((h,i)=>`${i+1}. ${h||'(فارغ)'}`)];
+  c.innerHTML=COL_DEFS.map(def=>{
+    const sel=impMap[def.f]!==undefined?impMap[def.f]+1:0;
+    const req=def.f==='title';
+    return `<div style="display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 10px">
+      <div style="flex:1"><div style="font-size:11px;font-weight:700">${FN[def.f]}${req?'<span style="color:var(--danger)"> *</span>':''}</div>
+      <div style="font-size:10px;color:var(--muted)">${def.type==='date'?'📅 تاريخ':def.type==='number'?'🔢 رقم':'📝 نص'}</div></div>
+      <select onchange="impMap['${def.f}']=this.value=='-1'?undefined:+this.value-1;renderPreview();updateSummary()"
+        style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:4px 6px;border-radius:5px;font-family:Cairo,sans-serif;font-size:11px;max-width:145px;outline:none">
+        ${opts.map((h,i)=>`<option value="${i-1}" ${sel===i?'selected':''}>${h}</option>`).join('')}
+      </select></div>`;
+  }).join('');
+}
+
+function parseCell(raw,type){
+  if(raw===null||raw===undefined||raw==='')return'';
+  const s=raw.toString().trim();
+  if(type==='number'){const n=parseFloat(s.replace(/[,،\s]/g,''));return isNaN(n)?'':n;}
+  if(type==='date'){
+    if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(0,10);
+    const m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+    if(m){const y=m[3].length===2?'20'+m[3]:m[3];return`${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;}
+    const num=parseFloat(s);
+    if(!isNaN(num)&&num>1000){try{const d=XLSX.SSF.parse_date_code(num);if(d)return`${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`;}catch(e){}}
+    return s;
+  }
+  return s;
+}
+
+function rowToBid(row){
+  const get=f=>{const i=impMap[f];if(i===undefined||i<0)return'';return parseCell(row[i],COL_DEFS.find(d=>d.f===f)?.type||'text');};
+  let stage=get('stage')||'جديدة';const sm=STAGES.find(s=>stage.includes(s)||s.includes(stage));stage=sm||'جديدة';
+  let type=get('type')||'منافسة عامة';const to=['منافسة عامة','منافسة محدودة','شراء مباشر','اتفاقية إطارية'];const tm=to.find(t=>type.includes(t)||t.includes(type));type=tm||type||'منافسة عامة';
+  return{id:uid(),tender:get('tender'),lot:get('lot'),title:get('title'),client:get('client'),
+    src:get('src')||'منصة اعتماد',type,sub:get('sub')||'بيورمايندز (المجموعة)',
+    val:get('val'),bond:get('bond'),pub:get('pub'),dl:get('dl'),open:get('open'),
+    mgr:get('mgr'),prob:get('prob'),comp:get('comp'),notes:get('notes'),
+    loss:'',winp:'',link:'',stage,reqs:[],offer:[],ai:null,cr:new Date().toISOString()};
+}
+
+function renderPreview(){
+  const PF=['title','client','type','sub','stage','val','dl'];
+  const thead=document.getElementById('impPreviewHead');
+  const tbody=document.getElementById('impPreviewBody');
+  thead.innerHTML='<tr style="border-bottom:1px solid var(--border)">'+PF.map(f=>`<th style="padding:8px 10px;text-align:right;font-size:10px;font-weight:700;color:var(--accent2);white-space:nowrap">${FN[f]}</th>`).join('')+'<th style="padding:8px;font-size:10px;color:var(--muted)">#</th></tr>';
+  tbody.innerHTML=impRows.slice(0,10).map((row,i)=>{
+    const b=rowToBid(row);
+    const ok=b.title&&b.title.trim();
+    return`<tr style="border-bottom:1px solid var(--border);${ok?'':'background:rgba(239,68,68,.06)'}">
+      ${PF.map(f=>{let v=b[f]||'';
+        if(f==='val'&&v)v=Number(v).toLocaleString('ar-SA');
+        if(f==='stage')v=`<span style="color:${SC[v]||'var(--muted)'}">${v}</span>`;
+        return`<td style="padding:7px 10px;font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v||'<span style="color:var(--muted)">—</span>'}</td>`;
+      }).join('')}
+      <td style="padding:7px 10px;font-size:10px;color:var(--muted)">${i+1}</td></tr>`;
+  }).join('')+(impRows.length>10?`<tr><td colspan="${PF.length+1}" style="padding:10px;text-align:center;color:var(--muted);font-size:11px">... و${impRows.length-10} صف إضافي</td></tr>`:'');
+}
+
+function updateSummary(){
+  const valid=impRows.filter(r=>{const b=rowToBid(r);return b.title&&b.title.trim();}).length;
+  document.getElementById('impReadySummary').innerHTML=
+    `إجمالي الصفوف: <strong>${impRows.length}</strong> | صالحة: <strong style="color:var(--success)">${valid}</strong>`+
+    (impRows.length-valid>0?` | ستُتجاهل: <strong style="color:var(--warning)">${impRows.length-valid}</strong>`:'');
+}
+
+function doImport(){
+  const mode=document.querySelector('input[name="impMode"]:checked')?.value||'add';
+  const nb=impRows.map(rowToBid).filter(b=>b.title&&b.title.trim());
+  if(!nb.length){toast('❌ لا توجد بيانات صالحة');return;}
+  if(mode==='replace'){
+    if(!confirm(`⚠️ سيتم حذف ${bids.length} مناقصة واستبدالها بـ ${nb.length}. هل أنت متأكد؟`))return;
+    bids=nb;
+  }else{bids=[...nb,...bids];}
+  save();renderAll();closeModal('importModal');
+  toast(`✅ تم استيراد ${nb.length} مناقصة بنجاح`);
+}
+
+function dlTemplate(){
+  const headers=COL_DEFS.map(d=>FN[d.f]);
+  const ex=['2025-ETM-0001','','إنتاج إعلامي لرؤية 2030','وزارة الثقافة والإعلام','منصة اعتماد','منافسة عامة','Peacock','تحضير',2800000,56000,'2025-02-01','2025-06-30','2025-07-15','اسمك',75,'روتانا للإنتاج','ملاحظات المناقصة'];
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet([headers,ex]);
+  ws['!cols']=headers.map(()=>({wch:22}));
+  XLSX.utils.book_append_sheet(wb,ws,'المناقصات');
+  const inst=[
+    ['📋 تعليمات استخدام القالب'],[''],
+    ['1. عبّئ بيانات المناقصات في ورقة "المناقصات" ابتداءً من الصف الثاني'],
+    ['2. لا تغيّر أسماء الأعمدة في الصف الأول'],
+    ['3. التواريخ بصيغة: YYYY-MM-DD (مثال: 2025-06-30)'],
+    ['4. القيم المالية بالأرقام فقط بدون رموز أو فواصل'],[''],
+    ['📌 قيم المرحلة المقبولة:'],...STAGES.map(s=>['   • '+s]),[''],
+    ['📌 قيم نوع المناقصة:'],...['منافسة عامة','منافسة محدودة','شراء مباشر','اتفاقية إطارية'].map(t=>['   • '+t]),[''],
+    ['📌 قيم الشركة:'],...['بيورمايندز (المجموعة)','GlobalMind','Peacock','WORDUP','LtsThink','Deep Vision','KEES'].map(s=>['   • '+s]),
+  ];
+  const wi=XLSX.utils.aoa_to_sheet(inst);wi['!cols']=[{wch:60}];
+  XLSX.utils.book_append_sheet(wb,wi,'التعليمات');
+  XLSX.writeFile(wb,'pureminds-template.xlsx');
+  toast('✅ تم تنزيل قالب Excel');
+}
+</script>
