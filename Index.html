@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <title>PUREMINDS — إدارة المناقصات 2026</title>
+<meta name="description" content="منصة PUREMINDS لإدارة المناقصات وتطوير الأعمال 2026">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#001c38">
+<meta property="og:title" content="PUREMINDS BD 2026">
+<meta property="og:description" content="إدارة المناقصات وتطوير الأعمال">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -198,6 +204,34 @@ input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:var(--bl
 .xbtn{padding:7px 14px;background:rgba(34,197,94,.1);color:#166534;border:1px solid #22c55e;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
 .xbtn:hover{background:#22c55e;color:#fff}
 
+
+/* ── KANBAN / AGILE URGENT ── */
+.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kanban-col{background:var(--bg);border-radius:12px;padding:10px 10px 14px}
+.kanban-hdr{font-size:10px;font-weight:800;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:8px;letter-spacing:.5px;text-transform:uppercase}
+.agile-card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:11px 12px;margin-bottom:8px;cursor:pointer;transition:all .15s;border-top:3px solid transparent;position:relative}
+.agile-card:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.1)}
+.agile-card .ac-entity{font-size:12px;font-weight:700;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.agile-card .ac-name{font-size:9px;color:var(--mt);margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.agile-card .ac-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--bd)}
+.agile-card .ac-analyst{font-size:9px;background:var(--bg);padding:2px 7px;border-radius:10px;font-weight:600;color:var(--mt)}
+.agile-card .ac-days{font-size:16px;font-weight:900;line-height:1}
+.agile-card .ac-platform{font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;background:rgba(0,154,222,.08);color:var(--bl)}
+body.dark .agile-card{background:#1e293b;border-color:#334155}
+body.dark .kanban-col{background:#0f172a}
+@media(max-width:900px){.kanban{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){.kanban{grid-template-columns:1fr}}
+
+/* ── KRASSAT PAGE ── */
+.tab-bar{display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid var(--bd);padding-bottom:0}
+.tab-btn{padding:8px 16px;font-size:11px;font-weight:700;border:none;background:transparent;cursor:pointer;font-family:inherit;color:var(--mt);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab-btn.on{color:var(--bl);border-bottom-color:var(--bl)}
+.tab-btn:hover:not(.on){color:var(--nv)}
+.tab-pane{display:none}.tab-pane.on{display:block}
+.check-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;display:inline-block}
+.bool-yes{color:#22c55e;font-weight:700;font-size:11px}
+.bool-no{color:#ef4444;font-weight:700;font-size:11px}
+
 /* ── DATE FILTER ROW ── */
 input[type=date]{color-scheme:light;min-width:130px}
 body.dark input[type=date]{color-scheme:dark}
@@ -232,8 +266,8 @@ body.dark input[type=date]{color-scheme:dark}
   <button class="nb" onclick="go('tenders')"><span class="ni">◈</span><span id="nb-t">المناقصات</span></button>
   <button class="nb" id="nb-det" style="display:none" onclick="go('detail')"><span class="ni">◎</span>تفاصيل المناقصة</button>
   <button class="nb" onclick="go('urgent')"><span class="ni">⚡</span>العاجل<span class="nbd" id="ub">0</span></button>
-  <div class="sb-sec">المالي</div>
-  <button class="nb" onclick="go('financial')"><span class="ni">💰</span>العروض المالية</button>
+  <div class="sb-sec">المتابعة</div>
+  <button class="nb" onclick="go('krassat')"><span class="ni">📋</span>متابعة الكراسات</button>
   <div class="sb-sec">التحليل</div>
   <button class="nb" onclick="go('charts')"><span class="ni">📊</span>الرسوم البيانية</button>
   <button class="nb" onclick="go('timeline')"><span class="ni">📅</span>الجدول الزمني</button>
@@ -265,13 +299,13 @@ body.dark input[type=date]{color-scheme:dark}
   </div>
   <div class="kg" id="kgrid"></div>
   <div class="g2">
-    <div class="card"><div class="ch"><div class="ct">توزيع الحالات</div></div><div id="dec-bars"></div></div>
-    <div class="card"><div class="ch"><div class="ct">أقرب المواعيد النهائية</div></div><div id="upcoming" style="max-height:230px;overflow-y:auto"></div></div>
+    <div class="card"><div class="ch"><div class="ct">حالة العمل</div></div><div id="dec-bars"></div></div>
+    <div class="card"><div class="ch"><div class="ct">📋 ملخص متابعة الكراسات</div></div><div id="krassat-dash" style="max-height:230px;overflow-y:auto"></div></div>
   </div>
   <div class="g3">
     <div class="card"><div class="ch"><div class="ct">حسب النوع</div></div><div id="type-bars"></div></div>
     <div class="card"><div class="ch"><div class="ct">المنصات</div></div><div id="plat-l"></div></div>
-    <div class="card"><div class="ch"><div class="ct">ملخص مالي</div></div><div id="fin-sum"></div></div>
+    <div class="card"><div class="ch"><div class="ct">ملخص الكراسات</div></div><div id="fin-sum"></div></div>
   </div>
 </div>
 
@@ -337,7 +371,7 @@ body.dark input[type=date]{color-scheme:dark}
       <th class="cb-col"><input type="checkbox" id="cb-all" onchange="toggleAll(this.checked)" title="تحديد الكل"></th>
       <th style="width:28px">#</th><th>المناقصة / الجهة</th>
       <th style="width:86px">المحلل</th><th style="width:56px">النوع</th>
-      <th style="width:86px">الحالة</th><th style="width:95px">العرض المالي</th>
+      <th style="width:86px">الحالة</th><th style="width:95px">رقم العرض</th>
       <th style="width:56px">التقرير</th><th style="width:56px">الموعد</th>
     </tr></thead>
     <tbody id="t-body"></tbody></table>
@@ -366,35 +400,17 @@ body.dark input[type=date]{color-scheme:dark}
 
 <!-- ══ URGENT ══ -->
 <div id="page-urgent" class="page">
-  <div class="ph"><div class="ps">ALERTS</div><div class="pt">المناقصات العاجلة</div></div>
-  <div id="urg-c"></div>
+  <div class="ph"><div class="ps">ALERTS · AGILE BOARD</div><div class="pt">المناقصات العاجلة</div></div>
+  <div class="kg" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px" id="urg-kpi"></div>
+  <div class="kanban" id="urg-c"></div>
 </div>
 
-<!-- ══ FINANCIAL ══ -->
-<div id="page-financial" class="page">
-  <div class="ph"><div class="ps">FINANCIAL OFFERS</div><div class="pt">العروض المالية</div></div>
-  <div class="g4" id="fin-kpi"></div>
-  <div class="sr">
-    <input type="text" id="fsq" placeholder="🔍 بحث بالجهة أو البيان..." oninput="renderFin()">
-    <select id="fexec" onchange="renderFin()"><option>الكل</option></select>
-  </div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <table><thead><tr>
-      <th style="width:28px">#</th><th>الجهة / البيان</th>
-      <th style="width:90px">منفذ العرض</th><th style="width:90px">رقم العرض</th>
-      <th style="width:110px">المبلغ شامل ض.ق.م</th>
-      <th style="width:100px">بعد التخفيض</th>
-      <th style="width:70px">التاريخ</th><th style="width:50px">ملف</th>
-    </tr></thead>
-    <tbody id="fin-body"></tbody></table>
-  </div>
-</div>
 
 <!-- ══ CHARTS ══ -->
 <div id="page-charts" class="page">
   <div class="ph"><div class="ps">ANALYTICS</div><div class="pt">الرسوم البيانية</div></div>
   <div class="g2">
-    <div class="card"><div class="ch"><div class="ct">توزيع الحالات</div></div><div class="cw"><canvas id="c-dec"></canvas></div></div>
+    <div class="card"><div class="ch"><div class="ct">حالة العمل</div></div><div class="cw"><canvas id="c-dec"></canvas></div></div>
     <div class="card"><div class="ch"><div class="ct">أنواع المناقصات</div></div><div class="cw"><canvas id="c-type"></canvas></div></div>
   </div>
   <div class="g2">
@@ -403,7 +419,7 @@ body.dark input[type=date]{color-scheme:dark}
   </div>
   <div class="card"><div class="ch"><div class="ct">أعلى 10 جهات بالقيمة التقديرية (ألف ريال)</div></div><div style="height:260px"><canvas id="c-val"></canvas></div></div>
   <div class="g2">
-    <div class="card"><div class="ch"><div class="ct">أعلى 10 عروض مالية (ريال)</div></div><div class="cw"><canvas id="c-fin"></canvas></div></div>
+    <div class="card"><div class="ch"><div class="ct">حالات فتح العروض</div></div><div class="cw"><canvas id="c-fin"></canvas></div></div>
     <div class="card"><div class="ch"><div class="ct">المنصات</div></div><div class="cw"><canvas id="c-plat"></canvas></div></div>
   </div>
 </div>
@@ -465,6 +481,90 @@ body.dark input[type=date]{color-scheme:dark}
   <div id="tasks-body"></div>
 </div>
 
+
+<!-- ══ KRASSAT ══ -->
+<div id="page-krassat" class="page">
+  <div class="ph"><div class="ps">BD TRACKING</div><div class="pt">متابعة الكراسات وتطوير الأعمال</div></div>
+  <div class="kg" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px" id="kr-kpi"></div>
+  <div class="tab-bar">
+    <button class="tab-btn on" onclick="switchTab('kr','reports')">📊 تقرير فتح العروض</button>
+    <button class="tab-btn" onclick="switchTab('kr','platforms')">🖥️ المنصات</button>
+    <button class="tab-btn" onclick="switchTab('kr','alerts')">🔔 الإشعارات</button>
+    <button class="tab-btn" onclick="switchTab('kr','inquiries')">❓ الاستفسارات</button>
+    <button class="tab-btn" onclick="switchTab('kr','daily')">📅 المهام اليومية</button>
+  </div>
+  <!-- Reports tab -->
+  <div id="kr-tab-reports" class="tab-pane on">
+    <div class="sr" style="margin-bottom:12px">
+      <input type="text" id="kr-sq" placeholder="🔍 بحث..." oninput="renderKrassat()" style="min-width:220px">
+      <select id="kr-analyst" onchange="renderKrassat()"><option>الكل</option></select>
+      <select id="kr-status" onchange="renderKrassat()">
+        <option value="">كل الحالات</option>
+        <option>تم فتح المظاريف</option><option>لا يوجد</option><option>تم إلغائها</option>
+      </select>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table><thead><tr>
+        <th style="width:26px">#</th><th>الجهة / المنافسة</th>
+        <th style="width:80px">المسؤول</th>
+        <th style="width:70px">رقم العرض</th>
+        <th style="width:110px">قيمة العرض</th>
+        <th style="width:90px">العرض الفني</th>
+        <th style="width:90px">العرض المالي</th>
+        <th style="width:36px">كراسة</th>
+        <th style="width:36px">فني</th>
+        <th style="width:100px">المراجعة</th>
+      </tr></thead>
+      <tbody id="kr-body"></tbody></table>
+    </div>
+  </div>
+  <!-- Platforms tab -->
+  <div id="kr-tab-platforms" class="tab-pane">
+    <div class="g3" id="kr-platforms-grid"></div>
+  </div>
+  <!-- Alerts tab -->
+  <div id="kr-tab-alerts" class="tab-pane">
+    <div class="card" style="padding:0;overflow:hidden">
+      <table><thead><tr>
+        <th style="width:26px">#</th><th>الجهة</th><th>المناقصة</th>
+        <th style="width:90px">تاريخ التقديم</th>
+        <th style="width:80px">المنصة</th>
+        <th>الإشعار</th>
+        <th style="width:70px">المسؤول</th>
+      </tr></thead>
+      <tbody id="kr-alerts-body"></tbody></table>
+    </div>
+  </div>
+  <!-- Inquiries tab -->
+  <div id="kr-tab-inquiries" class="tab-pane">
+    <div class="card" style="padding:0;overflow:hidden">
+      <table><thead><tr>
+        <th style="width:26px">#</th><th>الجهة</th><th>المناقصة</th>
+        <th style="width:90px">تاريخ التقديم</th>
+        <th style="width:80px">المنصة</th>
+        <th>الاستفسارات والاشتراطات</th>
+        <th style="width:70px">المسؤول</th>
+      </tr></thead>
+      <tbody id="kr-inquiries-body"></tbody></table>
+    </div>
+  </div>
+  <!-- Daily tasks tab -->
+  <div id="kr-tab-daily" class="tab-pane">
+    <div id="kr-daily-grid"></div>
+  </div>
+  <!-- Upload -->
+  <div class="card" style="margin-top:14px">
+    <div class="ch"><div class="ct">📋 تحديث ملف متابعة الكراسات</div></div>
+    <div class="uzone" onclick="document.getElementById('f-krassat').click()">
+      <div style="font-size:26px;margin-bottom:8px">📋</div>
+      <div style="font-size:12px;font-weight:700;color:var(--bl);margin-bottom:4px">متابعة الكراسات.xlsx</div>
+      <div style="font-size:10px;color:var(--mt)">اسحب أو اضغط لتحديث البيانات</div>
+      <input type="file" id="f-krassat" accept=".xlsx,.xls" style="display:none" onchange="handleKrassatFile(this.files[0])">
+    </div>
+    <div id="kr-st" style="font-size:11px;margin-top:8px;color:var(--tl)"></div>
+  </div>
+</div>
+
 <!-- ══ SYNC ══ -->
 <div id="page-sync" class="page">
   <div class="ph"><div class="ps">DATA SYNC</div><div class="pt">تحديث البيانات</div></div>
@@ -494,12 +594,12 @@ body.dark input[type=date]{color-scheme:dark}
         <div id="st1" style="font-size:11px;margin-top:8px;color:var(--tl)"></div>
       </div>
       <div class="card">
-        <div class="ch"><div class="ct">💰 رفع ملف العروض المالية (.xlsx)</div></div>
-        <div class="uzone" onclick="document.getElementById('f2').click()">
-          <div style="font-size:26px;margin-bottom:8px">💰</div>
-          <div style="font-size:13px;font-weight:700;color:var(--gd);margin-bottom:4px">عروض_تطوير_أعمال.xlsx</div>
-          <div style="font-size:10px;color:var(--mt)">اسحب أو اضغط</div>
-          <input type="file" id="f2" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0],'f')">
+        <div class="ch"><div class="ct">📋 رفع ملف متابعة الكراسات (.xlsx)</div></div>
+        <div class="uzone" onclick="document.getElementById('f2kr').click()">
+          <div style="font-size:26px;margin-bottom:8px">📋</div>
+          <div style="font-size:13px;font-weight:700;color:var(--tl);margin-bottom:4px">متابعة_الكراسات.xlsx</div>
+          <div style="font-size:10px;color:var(--mt)">اسحب أو اضغط لتحديث البيانات</div>
+          <input type="file" id="f2kr" accept=".xlsx,.xls" style="display:none" onchange="handleKrassatFile(this.files[0])">
         </div>
         <div id="st2" style="font-size:11px;margin-top:8px;color:var(--tl)"></div>
       </div>
@@ -575,7 +675,6 @@ const LINK_FIELDS=[
   ['link_digital','📱 التسويق الرقمي','lt'],
   ['link_pr','🤝 العلاقات العامة','lg'],
   ['link_tech','💻 التقنية','ln'],
-  ['link_atheer','🎨 تصاميم أثير','lo'],
   ['link_design','🖌️ التصميم','lb'],
   ['link_events','🎪 الفعاليات','lt'],
 ];
@@ -610,21 +709,18 @@ function toggleLinkEdit(idx){
   if(el)el.style.display=el.style.display==='none'?'block':'none';
 }
 
-// Financial lookup
+// Normalise for matching
 const norm=s=>String(s||'').replace(/[\s\/\-\.]/g,'').toUpperCase();
-const finByNum={};
-const finByEnt={};
-FIN.forEach(f=>{
-  const k=norm(f.offer_num);if(k)finByNum[k]=f;
-  const e=norm(f.entity).slice(0,20);if(e.length>4)finByEnt[e]=f;
-});
-function getFin(t){
-  const on=norm(t.offer_num||'');
-  if(on&&finByNum[on])return finByNum[on];
-  if(t.fin)return t.fin; // pre-matched
-  const te=norm(t.entity||'').slice(0,20);
-  return te.length>4?finByEnt[te]||null:null;
+
+// Krassat lookup — matches by ref number first, then entity name
+function getKrassat(t){
+  if(!KRASSAT.reports.length)return null;
+  return KRASSAT.reports.find(r=>(r.ref&&String(t.ref)===String(r.ref))||
+    norm(t.entity||'').slice(0,15)===norm(r.entity||'').slice(0,15))||null;
 }
+// Legacy alias kept in case any code still calls getFin
+const finByNum={};const finByEnt={};
+function getFin(t){return getKrassat(t);}
 
 let autoTimer=null;
 
@@ -641,7 +737,7 @@ function go(id){
   if(id==='analysts')buildAnalysts();
   if(id==='tasks')buildTasks();
   if(id==='sync')buildSyncStats();
-  if(id==='financial')renderFin();
+  if(id==='krassat')buildKrassat();
 }
 
 // ══════════════════════════════════════════════
@@ -652,7 +748,7 @@ function init(){
   document.getElementById('sb-cnt').textContent=DATA.length+' مناقصة';
   document.getElementById('nb-t').textContent='المناقصات ('+DATA.length+')';
   document.getElementById('ub').textContent=DATA.filter(r=>{const d=dl(r.deadline);return d!==null&&d>=0&&d<=7;}).length;
-  buildSyncStats();buildFinKPI();
+  buildSyncStats();
   buildTaskFilters();
   (function(){const _p=DATA.filter(r=>['intro','content_dept','digital_dept','pr_dept','tech_dept','designs_atheer','design_dept','events_mgmt','design_edit','creative','review'].some(f=>r[f]==='مطلوب')).length;const _b=document.getElementById('tasks-badge');if(_b&&_p>0){_b.style.display='inline';_b.textContent=_p;}})();
   const saved=localStorage.getItem('pm_url');
@@ -668,10 +764,6 @@ function buildFilters(){
     while(el.options.length>1)el.remove(1);
     (i===0?an:ty).forEach(v=>{const o=document.createElement('option');o.textContent=v;el.appendChild(o);});
   });
-  const execs=[...new Set(FIN.map(f=>f.executor).filter(Boolean))].sort();
-  const fe=document.getElementById('fexec');
-  while(fe.options.length>1)fe.remove(1);
-  execs.forEach(v=>{const o=document.createElement('option');o.textContent=v;fe.appendChild(o);});
 }
 
 // ══════════════════════════════════════════════
@@ -682,7 +774,6 @@ function buildDashboard(){
   const counts={green:0,blue:0,gray:0,red:0};
   DATA.forEach(t=>counts[getColor(t)]++);
   const u7=DATA.filter(r=>{const d=dl(r.deadline);return d!==null&&d>=0&&d<=7;}).length;
-  const totalFin=FIN.reduce((s,f)=>s+(f.amount_inc_tax||0),0);
 
   document.getElementById('kgrid').innerHTML=[
     [N,'إجمالي المناقصات','',C.bl,'#e6f4ff'],
@@ -699,18 +790,38 @@ function buildDashboard(){
     ['غير مشارك',counts.red,'#ef4444'],
   ].map(([l,v,col])=>`<div class="br"><div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:11px"><span style="display:flex;align-items:center;gap:7px"><span style="width:10px;height:10px;border-radius:50%;background:${col};display:inline-block;flex-shrink:0"></span>${l}</span><b style="color:${col}">${v}</b></div><div class="bt"><div class="bf" style="width:${N?v/N*100:0}%;background:${col}"></div></div></div>`).join('');
 
-  const up=DATA.filter(r=>dl(r.deadline)>=0).sort((a,b)=>dl(a.deadline)-dl(b.deadline)).slice(0,9);
-  document.getElementById('upcoming').innerHTML=up.map(r=>{
-    const d=dl(r.deadline);const sc=SC[getColor(r)];
-    const tc=d<=3?'#ef4444':d<=7?C.gd:C.bl;
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bd);cursor:pointer" onclick="openD(${DATA.indexOf(r)})" ${r.deadline&&d<=0?'data-deadline="'+r.deadline+(r.time?' '+r.time:'')+'"':''}>
-      <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1">
-        <div style="width:8px;height:8px;border-radius:50%;background:${sc.dot};flex-shrink:0"></div>
-        <div style="min-width:0"><div style="font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.entity)}</div><div style="font-size:9px;color:var(--mt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc((r.name||'').slice(0,40))}</div></div>
-      </div>
-      <span style="font-size:10px;font-weight:700;color:${tc};background:${tc}1a;padding:3px 8px;border-radius:6px;margin-right:8px;flex-shrink:0">${d===0?'اليوم':d+'ي'}</span>
-    </div>`;
-  }).join('');
+  // Krassat summary widget
+  const krDash=document.getElementById('krassat-dash');
+  if(krDash){
+    if(!KRASSAT.reports.length){
+      krDash.innerHTML='<div style="font-size:11px;color:var(--mt);text-align:center;padding:30px 0">ارفع ملف متابعة الكراسات لعرض الملخص</div>';
+    } else {
+      const kr=KRASSAT.reports;
+      const opened=kr.filter(r=>r.tech_status&&r.tech_status.includes('فتح')).length;
+      const hasBOQ=kr.filter(r=>r.has_boq).length;
+      const hasTech=kr.filter(r=>r.has_tech).length;
+      const linked=kr.filter(r=>getKrassat({ref:r.ref,entity:r.entity})).length;
+      const analysts=[...new Set(kr.map(r=>r.analyst).filter(Boolean))];
+      krDash.innerHTML=`
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+          ${[[kr.length,'إجمالي العروض',C.bl],[opened,'تم فتح المظاريف','#22c55e'],[hasBOQ,'لديها كراسة',C.tl],[hasTech,'عرض فني جاهز',C.gd]]
+            .map(([v,l,c])=>`<div style="background:${c}14;border-radius:8px;padding:8px 10px;border-right:3px solid ${c}">
+              <div style="font-size:8px;color:var(--mt);font-weight:700">${l}</div>
+              <div style="font-size:18px;font-weight:900;color:${c}">${v}</div></div>`).join('')}
+        </div>
+        <div style="font-size:10px;color:var(--mt);font-weight:700;margin-bottom:5px">آخر العروض</div>
+        ${kr.slice(-5).reverse().map(r=>{
+          const t=DATA.find(td=>(r.ref&&String(td.ref)===String(r.ref))||norm(td.entity||'').slice(0,15)===norm(r.entity||'').slice(0,15));
+          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bd);cursor:pointer" ${t?`onclick="openD(${DATA.indexOf(t)})"`:''}">
+            <div style="font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px">${esc(r.entity)}</div>
+            <div style="display:flex;gap:5px;align-items:center">
+              <span style="font-size:8px;font-weight:700;color:${r.tech_status?.includes('فتح')?'#22c55e':'#9ca3af'}">${esc(r.tech_status||'—')}</span>
+              ${t?'<span style="font-size:8px;color:var(--bl)">🔗</span>':''}
+            </div>
+          </div>`;
+        }).join('')}`;
+    }
+  }
 
   document.getElementById('type-bars').innerHTML=['فعاليات','حملات','تقنية'].map(t=>{
     const v=DATA.filter(r=>r.type===t).length;const col=TC[t]||'#888';
@@ -721,11 +832,14 @@ function buildDashboard(){
   document.getElementById('plat-l').innerHTML=Object.entries(pl).sort((a,b)=>b[1]-a[1]).slice(0,7)
     .map(([p,c])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bd);font-size:11px"><span>${esc(p)}</span><b style="color:${C.bl}">${c}</b></div>`).join('');
 
+  const kr=KRASSAT.reports;
+  const krLinked=DATA.filter(t=>getKrassat(t)).length;
+  const krOpened=kr.filter(r=>r.tech_status&&r.tech_status.includes('فتح')).length;
   document.getElementById('fin-sum').innerHTML=[
-    ['عدد العروض المالية',FIN.length,C.bl],
-    ['الإجمالي شامل الضريبة',sar(totalFin)+' ﷼',C.gd],
-    ['متوسط العرض',sar(totalFin/Math.max(FIN.length,1))+' ﷼',C.tl],
-    ['مناقصات مرتبطة بعروض',DATA.filter(t=>getFin(t)).length,C.nv],
+    ['إجمالي عروض الكراسات',kr.length,C.bl],
+    ['تم فتح المظاريف',krOpened,'#22c55e'],
+    ['لديها كراسة',kr.filter(r=>r.has_boq).length,C.tl],
+    ['مناقصات مرتبطة',krLinked,C.gd],
   ].map(([l,v,col])=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bd);font-size:11px"><span style="color:var(--mt)">${l}</span><b style="color:${col}">${v}</b></div>`).join('');
 }
 
@@ -770,20 +884,14 @@ function getFiltered(){
     return true;
   });
 
-  // Always sort: active deadlines first (nearest→farthest), then expired, then no date
+  // Sort: newest deadline first (الأحدث فالأقدم) — descending date
   rows.sort((a,b)=>{
-    const da=dl(a.deadline),db=dl(b.deadline);
-    // Both have future/today deadlines → nearest first
-    if(da!==null&&da>=0&&db!==null&&db>=0)return da-db;
-    // One has future deadline → it goes first
-    if(da!==null&&da>=0)return -1;
-    if(db!==null&&db>=0)return 1;
-    // Both expired → most recent expiry first (smallest negative = most recent)
-    if(da!==null&&da<0&&db!==null&&db<0)return db-da;
-    if(da!==null&&da<0)return -1;
-    if(db!==null&&db<0)return 1;
-    // Both null → stable
-    return 0;
+    const da=a.deadline?new Date(a.deadline):null;
+    const db=b.deadline?new Date(b.deadline):null;
+    if(!da&&!db)return 0;
+    if(!da)return 1;   // no date → end
+    if(!db)return -1;
+    return db-da;      // newest date first
   });
 
   // Update label
@@ -816,8 +924,8 @@ function renderT(){
     const sc=SC[getColor(r)];
     const dc=d===null?'#94a3b8':d<0?'#94a3b8':d<=3?'#ef4444':d<=7?C.gd:'#94a3b8';
     const dt=d===null?'—':d<0?'مضى':d===0?'اليوم':d+'ي';
-    const fin=getFin(r);
-    const finTxt=fin?`<span style="font-size:9px;font-weight:700;color:#166534">${sar(fin.amount_after_discount||fin.amount_inc_tax)} ﷼</span>`:`<span style="font-size:9px;color:var(--mt)">—</span>`;
+    const kr=getKrassat(r);
+    const finTxt=kr?`<span style="font-size:9px;font-weight:700;color:${kr.tech_status?.includes('فتح')?'#166534':C.bl}">${esc(kr.offer_num||'—')}</span>`:`<span style="font-size:9px;color:var(--mt)">—</span>`;
     const ridx=DATA.indexOf(r);
     return `<tr class="tr c-${getColor(r)}" style="background:${sc.bg}" data-idx="${ridx}" onclick="rowClick(event,${ridx})">
       <td class="cb-col" onclick="event.stopPropagation()"><input type="checkbox" class="row-cb" data-idx="${ridx}" onchange="onCbChange()"></td>
@@ -872,7 +980,6 @@ function openD(idx){
   const _lnks=getTenderLinks(t);
   const links=[];
   LINK_FIELDS.forEach(([f,lbl,cls])=>{if(_lnks[f])links.push(lbtn(_lnks[f],lbl,cls));});
-  if(t.platform==='اعتماد') links.push(`<a href="https://etimad.sa" target="_blank" class="lbtn ln">🏛️ اعتماد</a>`);
   if(t.platform==='تنافس')  links.push(`<a href="https://www.tanafos.gov.sa" target="_blank" class="lbtn lt">🏆 تنافس</a>`);
   if(t.platform==='اريبا')  links.push(`<a href="https://www.ariba.com" target="_blank" class="lbtn lg">🔗 اريبا</a>`);
 
@@ -903,7 +1010,7 @@ function openD(idx){
   const depts=[['مقدمة العرض الفني',t.intro,t.link_attachments],
     ['قسم المحتوى',t.content_dept,t.link_content],['التسويق الرقمي',t.digital_dept,t.link_digital],
     ['العلاقات العامة',t.pr_dept,t.link_pr],['التقنية',t.tech_dept,t.link_tech],
-    ['تصاميم أثير',t.designs_atheer,t.link_atheer],['قسم التصميم',t.design_dept,t.link_design],
+    ['قسم التصميم',t.design_dept,t.link_design],
     ['إدارة الفعاليات',t.events_mgmt,t.link_events],
     ['تعديل تصاميم',t.design_edit,''],['الأفكار الإبداعية',t.creative,''],['مراجعة العرض',t.review,'']
   ].filter(([,v])=>v);
@@ -913,31 +1020,45 @@ function openD(idx){
       return href?`<a href="${esc(href)}" target="_blank" class="di">${inner}</a>`:`<div class="di">${inner}</div>`;
     }).join('')+'</div>';
 
-  // Financial card
-  const fin=getFin(t);
-  if(fin){
-    const finalAmt=fin.amount_after_discount||fin.amount_inc_tax||0;
+  // Krassat card — data from متابعة الكراسات
+  const kr=getKrassat(t);
+  if(kr){
+    const TECH_COL={'تم فتح المظاريف':'#22c55e','لا يوجد':'#9ca3af','تم إلغائها':'#ef4444'};
+    const techC=TECH_COL[kr.tech_status]||'#9ca3af';
+    const finC=TECH_COL[kr.fin_status]||'#9ca3af';
     document.getElementById('d-fin').innerHTML=`
       <div class="fin-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <span style="font-size:13px;font-weight:700;color:${C.gd}">💰 العرض المالي المرتبط</span>
-          <span style="font-size:10px;color:rgba(255,255,255,.4)">${esc(fin.offer_num)}</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span style="font-size:13px;font-weight:700;color:${C.tl}">📋 بيانات متابعة الكراسة</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.4);font-weight:700">${esc(kr.offer_num||'—')}</span>
         </div>
-        <div class="fin-amount">${fmoney(finalAmt)}</div>
-        <div class="fin-row"><span>غير شامل الضريبة</span><b>${fmoney(fin.amount_ex_tax)}</b></div>
-        <div class="fin-row"><span>الضريبة (15%)</span><b>${fmoney(fin.tax)}</b></div>
-        <div class="fin-row"><span>شامل الضريبة</span><b>${fmoney(fin.amount_inc_tax)}</b></div>
-        ${fin.discount_request?`<div class="fin-row"><span>طلب تخفيض</span><b style="color:#fca5a5">${esc(fin.discount_request)}</b></div>`:''}
-        ${fin.amount_after_discount?`<div class="fin-row"><span>بعد التخفيض</span><b style="color:${C.gd}">${fmoney(fin.amount_after_discount)}</b></div>`:''}
-        ${fin.notes?`<div style="margin-top:8px;font-size:10px;color:rgba(255,255,255,.5);border-top:1px solid rgba(255,255,255,.1);padding-top:8px">${esc(fin.notes)}</div>`:''}
-        <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
-          ${fin.link_offer?lbtn(fin.link_offer,'↗ فتح ملف العرض المالي','lt'):''}
-          <span style="font-size:10px;color:rgba(255,255,255,.4)">منفذ العرض: ${esc(fin.executor||'—')}</span>
-          <span style="font-size:10px;color:rgba(255,255,255,.4)">${fin.date||''}</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+          <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px 12px">
+            <div style="font-size:8px;color:rgba(255,255,255,.4);font-weight:700;margin-bottom:4px">حالة العرض الفني</div>
+            <div style="font-size:12px;font-weight:700;color:${techC}">${esc(kr.tech_status||'—')}</div>
+          </div>
+          <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px 12px">
+            <div style="font-size:8px;color:rgba(255,255,255,.4);font-weight:700;margin-bottom:4px">حالة العرض المالي</div>
+            <div style="font-size:12px;font-weight:700;color:${finC}">${esc(kr.fin_status||'—')}</div>
+          </div>
+          <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px 12px">
+            <div style="font-size:8px;color:rgba(255,255,255,.4);font-weight:700;margin-bottom:4px">كراسة الشروط</div>
+            <div style="font-size:14px;font-weight:900;color:${kr.has_boq?'#22c55e':'#ef4444'}">${kr.has_boq?'✓ متوفرة':'✗ غير متوفرة'}</div>
+          </div>
+          <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px 12px">
+            <div style="font-size:8px;color:rgba(255,255,255,.4);font-weight:700;margin-bottom:4px">العرض الفني</div>
+            <div style="font-size:14px;font-weight:900;color:${kr.has_tech?'#22c55e':'#ef4444'}">${kr.has_tech?'✓ جاهز':'✗ غير جاهز'}</div>
+          </div>
         </div>
+        ${kr.offer_value>0?`<div class="fin-row"><span>قيمة العرض المالي</span><b style="color:${C.gd}">${fmoney(kr.offer_value)}</b></div>`:''}
+        ${kr.report_status?`<div class="fin-row"><span>تقرير فتح العروض</span><b>${esc(kr.report_status)}</b></div>`:''}
+        ${kr.review_status?`<div class="fin-row"><span>المراجعة والتدقيق</span><b>${esc(kr.review_status)}</b></div>`:''}
+        ${kr.analysis?`<div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,.5);border-top:1px solid rgba(255,255,255,.1);padding-top:8px"><span style="font-weight:700;color:rgba(255,255,255,.6)">تحليل النتائج السابقة: </span>${esc(kr.analysis)}</div>`:''}
+        ${kr.notes?`<div style="margin-top:8px;font-size:10px;color:rgba(255,255,255,.5)"><span style="font-weight:700;color:rgba(255,255,255,.6)">ملاحظات: </span>${esc(kr.notes)}</div>`:''}
+        <div style="margin-top:12px;font-size:10px;color:rgba(255,255,255,.35)">الفترة: ${esc(kr.period||'—')} · المسؤول: ${esc(kr.analyst||t.analyst||'—')}</div>
       </div>`;
   } else {
-    document.getElementById('d-fin').innerHTML=`<div class="fin-no-offer">لا يوجد عرض مالي مرتبط بهذه المناقصة</div>`;
+    document.getElementById('d-fin').innerHTML=`<div class="fin-no-offer">لا يوجد سجل في متابعة الكراسات لهذه المناقصة — ارفع الملف من صفحة متابعة الكراسات</div>`;
   }
   go('detail');
 }
@@ -946,62 +1067,68 @@ function openD(idx){
 // URGENT
 // ══════════════════════════════════════════════
 function buildUrgent(){
-  const groups=[
-    {l:'ينتهي اليوم!',ts:DATA.filter(r=>dl(r.deadline)===0),c:'#ef4444'},
-    {l:'خلال 3 أيام',ts:DATA.filter(r=>{const d=dl(r.deadline);return d>0&&d<=3;}),c:'#f75226'},
-    {l:'خلال 7 أيام',ts:DATA.filter(r=>{const d=dl(r.deadline);return d>3&&d<=7;}),c:C.gd},
-    {l:'هذا الشهر',ts:DATA.filter(r=>{const d=dl(r.deadline);return d>7&&d<=30;}),c:C.bl},
+  const cols=[
+    {id:'today', l:'⚡ اليوم',      sub:'ينتهي اليوم',   c:'#ef4444', bg:'#fef2f2', ts:DATA.filter(r=>dl(r.deadline)===0)},
+    {id:'d3',    l:'🔴 3 أيام',     sub:'خلال 3 أيام',   c:'#f75226', bg:'#fff8f5', ts:DATA.filter(r=>{const d=dl(r.deadline);return d>0&&d<=3;})},
+    {id:'d7',    l:'🟡 أسبوع',      sub:'خلال 7 أيام',   c:C.gd,      bg:'#fffbeb', ts:DATA.filter(r=>{const d=dl(r.deadline);return d>3&&d<=7;})},
+    {id:'month', l:'🔵 الشهر',      sub:'خلال 30 يوماً', c:C.bl,      bg:'#eff6ff', ts:DATA.filter(r=>{const d=dl(r.deadline);return d>7&&d<=30;})},
   ];
-  document.getElementById('urg-c').innerHTML=groups.filter(g=>g.ts.length>0).map(g=>`
-    <div style="margin-bottom:20px">
-      <div style="font-size:11px;font-weight:700;color:${g.c};margin-bottom:8px;display:flex;align-items:center;gap:7px">
-        <div style="width:8px;height:8px;border-radius:50%;background:${g.c}"></div>${g.l} (${g.ts.length})
+  const total=cols.reduce((s,g)=>s+g.ts.length,0);
+
+  // KPI
+  document.getElementById('urg-kpi').innerHTML=cols.map(g=>`
+    <div class="kc" style="border-top-color:${g.c};background:${g.bg};cursor:pointer" onclick="document.getElementById('urg-col-${g.id}')?.scrollIntoView({behavior:'smooth'})">
+      <div class="kl">${g.sub}</div>
+      <div class="kv" style="color:${g.c}">${g.ts.length}</div>
+    </div>`).join('');
+
+  if(total===0){
+    document.getElementById('urg-c').innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--mt);font-size:14px">🎉 لا توجد مناقصات عاجلة حالياً</div>`;
+    return;
+  }
+
+  document.getElementById('urg-c').innerHTML=cols.map(g=>`
+    <div class="kanban-col" id="urg-col-${g.id}">
+      <div class="kanban-hdr" style="background:${g.bg};color:${g.c};border-bottom:none">
+        <span>${g.l}</span>
+        <span style="background:${g.c};color:#fff;border-radius:10px;padding:2px 8px;font-size:10px">${g.ts.length}</span>
       </div>
-      ${g.ts.sort((a,b)=>dl(a.deadline)-dl(b.deadline)).map(r=>{
-        const sc=SC[getColor(r)];
-        return `<div class="ur" style="background:${sc.bg};border-color:${sc.bd}" onclick="openD(${DATA.indexOf(r)})">
-          <div><div style="display:flex;align-items:center;gap:7px;margin-bottom:2px"><div style="width:8px;height:8px;border-radius:50%;background:${sc.dot};flex-shrink:0"></div><span style="font-size:11px;font-weight:600">${esc((r.name||'').slice(0,50))}</span></div><div style="font-size:9px;color:var(--mt);padding-right:15px">${esc(r.entity)} · ${esc(r.analyst||'—')}</div></div>
-          ${pill(r.decision)}
-          <div style="font-size:14px;font-weight:900;color:${g.c};text-align:center">${dl(r.deadline)===0?'اليوم':dl(r.deadline)+'ي'}</div>
-        </div>`;
-      }).join('')}
-    </div>`).join('')||`<div style="text-align:center;padding:40px;color:var(--mt)">🎉 لا توجد مناقصات عاجلة</div>`;
+      ${g.ts.length===0
+        ? `<div style="text-align:center;padding:20px;color:var(--mt);font-size:10px">لا يوجد</div>`
+        : g.ts.sort((a,b)=>dl(a.deadline)-dl(b.deadline)).map(r=>{
+            const sc=SC[getColor(r)];
+            const d=dl(r.deadline);
+            const lnks=getTenderLinks(r);
+            return `<div class="agile-card" style="border-top-color:${g.c};border-right:3px solid ${sc.dot}" onclick="openD(${DATA.indexOf(r)})">
+              <div class="ac-entity">${esc(r.entity)}</div>
+              <div class="ac-name">${esc((r.name||'').slice(0,70))}</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
+                ${pill(r.decision)}
+                <span class="ac-platform">${esc(r.platform||'')}</span>
+              </div>
+              <div class="ac-footer">
+                <span class="ac-analyst">${esc(r.analyst||'—')}</span>
+                <div style="text-align:center">
+                  <div class="ac-days" style="color:${g.c}">${d===0?'اليوم':d+'ي'}</div>
+                  <div style="font-size:8px;color:var(--mt)">${r.deadline||''}</div>
+                </div>
+              </div>
+              ${lnks.link_attachments||lnks.link_scope?`<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">
+                ${lnks.link_attachments?`<a href="${esc(lnks.link_attachments)}" target="_blank" class="lbtn lb" style="font-size:8px;padding:3px 7px" onclick="event.stopPropagation()">📎</a>`:''}
+                ${lnks.link_scope?`<a href="${esc(lnks.link_scope)}" target="_blank" class="lbtn lt" style="font-size:8px;padding:3px 7px" onclick="event.stopPropagation()">📄</a>`:''}
+                ${lnks.link_team?`<a href="${esc(lnks.link_team)}" target="_blank" class="lbtn ln" style="font-size:8px;padding:3px 7px" onclick="event.stopPropagation()">👥</a>`:''}
+              </div>`:''}
+            </div>`;
+          }).join('')
+      }
+    </div>`).join('');
 }
 
 // ══════════════════════════════════════════════
-// FINANCIAL
+// FINANCIAL (legacy stubs — page removed)
 // ══════════════════════════════════════════════
-function buildFinKPI(){
-  const total=FIN.reduce((s,f)=>s+(f.amount_inc_tax||0),0);
-  const withDisc=FIN.filter(f=>f.discount_request).length;
-  const afterDisc=FIN.reduce((s,f)=>s+(f.amount_after_discount||0),0);
-  document.getElementById('fin-kpi').innerHTML=[
-    [FIN.length,'عدد العروض','',C.bl,'#e6f4ff'],
-    [sar(total)+' ﷼','إجمالي شامل الضريبة','',C.gd,'#fffbeb'],
-    [withDisc,'طلبات تخفيض','',C.or,'#fff8f5'],
-    [afterDisc?sar(afterDisc)+' ﷼':'—','إجمالي بعد التخفيض','',C.tl,'#e6faf9'],
-  ].map(([v,l,s,col,bg])=>`<div class="kc" style="border-top-color:${col};background:${bg}"><div class="kl">${l}</div><div class="kv" style="color:${col};font-size:18px">${v}</div></div>`).join('');
-}
-function renderFin(){
-  const q=document.getElementById('fsq').value;
-  const exec=document.getElementById('fexec').value;
-  const rows=FIN.filter(f=>{
-    if(q&&!f.entity?.includes(q)&&!f.name?.includes(q))return false;
-    if(exec!=='الكل'&&f.executor!==exec)return false;
-    return true;
-  });
-  document.getElementById('fin-body').innerHTML=rows.map((f,i)=>`
-    <tr class="tr" style="background:${i%2?'#fffbeb':'#fff8f0'};border-right:4px solid ${C.gd}">
-      <td style="color:var(--mt)">${i+1}</td>
-      <td><div style="font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px">${esc(f.entity)}</div><div style="font-size:9px;color:var(--mt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px">${esc(f.name)}</div></td>
-      <td style="font-size:10px">${esc(f.executor)||'—'}</td>
-      <td style="font-size:10px;font-weight:600;color:var(--nv)">${esc(f.offer_num)||'—'}</td>
-      <td style="font-size:11px;font-weight:700;color:var(--nv)">${fmoney(f.amount_inc_tax)}</td>
-      <td style="font-size:10px;font-weight:600;color:${f.amount_after_discount?C.or:'#888'}">${f.amount_after_discount?fmoney(f.amount_after_discount):'—'}</td>
-      <td style="font-size:10px;color:var(--mt)">${f.date||'—'}</td>
-      <td>${f.link_offer?`<a href="${esc(f.link_offer)}" target="_blank" class="lbtn lt" style="padding:3px 8px;font-size:9px">↗ فتح</a>`:'—'}</td>
-    </tr>`).join('');
-}
+function buildFinKPI(){}
+function renderFin(){}
 
 // ══════════════════════════════════════════════
 // CHARTS
@@ -1031,8 +1158,10 @@ function buildCharts(){
     const ev={};DATA.forEach(r=>{if(r.value>0){const e=(r.entity||'—').slice(0,16);ev[e]=(ev[e]||0)+r.value;}});
     const eve=Object.entries(ev).sort((a,b)=>b[1]-a[1]).slice(0,10);
     mkC('c-val','bar',eve.map(e=>e[0]),[{label:'القيمة (ألف)',data:eve.map(e=>e[1]),backgroundColor:C.nv+'cc',borderColor:C.nv,borderWidth:1,borderRadius:4}]);
-    const finTop=FIN.filter(f=>f.amount_inc_tax>0).sort((a,b)=>b.amount_inc_tax-a.amount_inc_tax).slice(0,10);
-    mkC('c-fin','bar',finTop.map(f=>f.entity.slice(0,16)),[{label:'المبلغ (ريال)',data:finTop.map(f=>f.amount_inc_tax),backgroundColor:C.gd+'cc',borderColor:C.gd,borderWidth:1,borderRadius:4}]);
+    // حالات فتح العروض (from krassat)
+    const krStatusMap={};KRASSAT.reports.forEach(r=>{const s=r.tech_status||'—';krStatusMap[s]=(krStatusMap[s]||0)+1;});
+    const krSE=Object.entries(krStatusMap).sort((a,b)=>b[1]-a[1]);
+    mkC('c-fin','doughnut',krSE.map(e=>e[0]),[{data:krSE.map(e=>e[1]),backgroundColor:['#22c55e','#9ca3af','#ef4444',C.gd,C.bl,'#8b5cf6'],borderWidth:2,borderColor:'#fff'}]);
     const pl={};DATA.forEach(r=>{const p=(r.platform||'—').trim();pl[p]=(pl[p]||0)+1;});
     const ple=Object.entries(pl).sort((a,b)=>b[1]-a[1]);
     mkC('c-plat','doughnut',ple.map(e=>e[0]),[{data:ple.map(e=>e[1]),backgroundColor:[C.bl,C.tl,C.gd,C.or,C.nv,'#8b5cf6','#ec4899','#888'],borderWidth:2,borderColor:'#fff'}]);
@@ -1238,10 +1367,10 @@ function buildSidebarUrgent(){
 
 function buildSyncStats(){
   const counts={green:0,blue:0,gray:0,red:0};DATA.forEach(t=>counts[getColor(t)]++);
-  const tv=FIN.reduce((s,f)=>s+(f.amount_inc_tax||0),0);
+  const krOpen=KRASSAT.reports.filter(r=>r.tech_status?.includes('فتح')).length;
   document.getElementById('sync-stats').innerHTML=`<div class="ch"><div class="ct">📊 البيانات الحالية</div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-    ${[[DATA.length,'إجمالي المناقصات',C.bl],[counts.green,'مشارك/مُرسل','#22c55e'],[counts.blue,'جاري العمل','#3b82f6'],[FIN.length,'عروض مالية',C.gd]]
+    ${[[DATA.length,'إجمالي المناقصات',C.bl],[counts.green,'مشارك/مُرسل','#22c55e'],[counts.blue,'جاري العمل','#3b82f6'],[KRASSAT.reports.length,'سجلات الكراسات',C.tl]]
       .map(([v,l,col])=>`<div style="text-align:center;padding:10px;background:var(--bg);border-radius:9px;border:1px solid var(--bd)">
         <div style="font-size:20px;font-weight:800;color:${col};margin-bottom:3px">${v}</div>
         <div style="font-size:9px;color:var(--mt)">${l}</div></div>`).join('')}
@@ -1297,52 +1426,33 @@ function csvSplit(line){const r=[];let c='',q=false;for(let i=0;i<line.length;i+
 
 async function handleFile(file,type){
   if(!file)return;
-  const stId=type==='f'?'st2':'st1';
+  // type='t' only (tenders); krassat handled by handleKrassatFile
+  const stId='st1';
   document.getElementById(stId).textContent='⏳ جاري القراءة...';
   try{
     if(typeof XLSX==='undefined')throw new Error('مكتبة Excel لم تُحمَّل بعد');
-    const buf=await file.arrayBuffer();const wb=XLSX.read(buf);const ws=wb.Sheets[wb.SheetNames[0]];
+    const buf=await file.arrayBuffer();const wb=XLSX.read(buf,{cellDates:true});const ws=wb.Sheets[wb.SheetNames[0]];
     const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
-    if(type==='f'){
-      const parsed=rows.filter(r=>r['الجهة']||r['البيان']).map(r=>{
-        const g=k=>String(r[k]||'').trim();
-        const toN=k=>{try{return parseFloat(String(r[k]||0).replace(/[^\d.]/g,''))||0;}catch{return 0;}};
-        return {entity:g('الجهة'),name:g('البيان'),executor:g('منفذ العرض'),offer_num:g('رقم العرض المالي'),
-          date:g('التاريخ').slice(0,10),notes:g('ملاحظات'),
-          amount_ex_tax:toN('المبلغ / غير شامل الضريبة'),tax:toN('الضريبة'),
-          amount_inc_tax:toN('المبلغ شامل الضريبة'),discount_request:g('طلب تخفيض'),
-          amount_after_discount:toN('المبلغ بعد التخفيض شامل الضريبة'),link_offer:''};
-      });
-      if(parsed.length>0){
-        FIN.splice(0,FIN.length,...parsed);
-        Object.keys(finByNum).forEach(k=>delete finByNum[k]);
-        Object.keys(finByEnt).forEach(k=>delete finByEnt[k]);
-        FIN.forEach(f=>{const k=norm(f.offer_num);if(k)finByNum[k]=f;const e=norm(f.entity).slice(0,20);if(e.length>4)finByEnt[e]=f;});
-        buildFinKPI();buildSyncStats();renderT();
-        document.getElementById(stId).innerHTML=`<span style="color:var(--tl)">✓ تم تحميل ${parsed.length} عرض مالي</span>`;
-      }
-    } else {
-      const parsed=rows.filter(r=>r['اسم الجهة']&&String(r['اسم الجهة']).trim()).map(r=>{
-        const g=k=>String(r[k]||'').trim();
-        let deadline='';try{const dv=r['تاريخ تقديم العروض'];if(dv instanceof Date)deadline=dv.toISOString().slice(0,10);else if(typeof dv==='number')deadline=new Date((dv-25569)*864e5).toISOString().slice(0,10);else if(dv)deadline=String(dv).slice(0,10);}catch(e){}
-        return {entity:g('اسم الجهة'),type:g('نوع المنافسة'),name:g('اسم المناقصة / المشروع'),ref:g('الرقم المرجعي'),deadline,
-          value:parseFloat(g('قيمة المناقصة').replace(/[^\d.]/g,''))||0,platform:g('المنصة'),
-          offer_num:g('رقم العرض المالي'),decision:g('تقييم'),report:g('التقرير التحليلي'),
-          analyst:g('متابعة'),notes:g('مهمة'),final_approval:r['الإعتماد النهائي']==1,
-          link_attachments:g('رابط المرفقات'),link_scope:g('رابط نطاق العمل'),
-          link_price:g('رابط تحليل الأسعار'),link_report:g('رابط التقرير'),
-          link_team:g('رابط مهام الفريق'),link_content:g('رابط المحتوى'),
-          link_digital:g('رابط التسويق الرقمي'),link_pr:g('رابط العلاقات العامة'),
-          link_tech:g('رابط التقنية'),link_atheer:g('رابط أثير'),
-          link_design:g('رابط التصميم'),link_events:g('رابط الفعاليات')};
-      });
-      if(parsed.length>0){DATA.splice(0,DATA.length,...parsed);refresh();document.getElementById(stId).innerHTML=`<span style="color:var(--tl)">✓ تم تحميل ${parsed.length} مناقصة</span>`;}
-    }
+    const parsed=rows.filter(r=>r['اسم الجهة']&&String(r['اسم الجهة']).trim()).map(r=>{
+      const g=k=>String(r[k]||'').trim();
+      let deadline='';try{const dv=r['تاريخ تقديم العروض'];if(dv instanceof Date)deadline=dv.toISOString().slice(0,10);else if(typeof dv==='number')deadline=new Date((dv-25569)*864e5).toISOString().slice(0,10);else if(dv)deadline=String(dv).slice(0,10);}catch(e){}
+      return {entity:g('اسم الجهة'),type:g('نوع المنافسة'),name:g('اسم المناقصة / المشروع'),ref:g('الرقم المرجعي'),deadline,
+        value:parseFloat(g('قيمة المناقصة').replace(/[^\d.]/g,''))||0,platform:g('المنصة'),
+        offer_num:g('رقم العرض المالي'),decision:g('تقييم'),report:g('التقرير التحليلي'),
+        analyst:g('متابعة'),notes:g('مهمة'),final_approval:r['الإعتماد النهائي']==1,
+        link_attachments:g('رابط المرفقات'),link_scope:g('رابط نطاق العمل'),
+        link_price:g('رابط تحليل الأسعار'),link_report:g('رابط التقرير'),
+        link_team:g('رابط مهام الفريق'),link_content:g('رابط المحتوى'),
+        link_digital:g('رابط التسويق الرقمي'),link_pr:g('رابط العلاقات العامة'),
+        link_tech:g('رابط التقنية'),link_design:g('رابط التصميم'),link_events:g('رابط الفعاليات')};
+    });
+    if(parsed.length>0){DATA.splice(0,DATA.length,...parsed);refresh();buildCharts();document.getElementById(stId).innerHTML=`<span style="color:var(--tl)">✓ تم تحميل ${parsed.length} مناقصة — ${new Date().toLocaleTimeString('ar-SA')}</span>`;}
   }catch(e){document.getElementById(stId).innerHTML=`<span style="color:#ef4444">✗ ${e.message}</span>`;}
 }
 
 function refresh(){
-  buildFilters();buildTaskFilters();buildDashboard();renderT();buildUrgent();buildSidebarUrgent();buildSyncStats();
+  buildFilters();buildTaskFilters();buildDashboard();renderT();buildUrgent();buildSidebarUrgent();buildSyncStats();buildKrassat();
+  if(document.getElementById('page-krassat')?.classList.contains('on'))buildKrassat();
   document.getElementById('sb-cnt').textContent=DATA.length+' مناقصة';
   document.getElementById('nb-t').textContent='المناقصات ('+DATA.length+')';
   document.getElementById('ub').textContent=DATA.filter(r=>{const d=dl(r.deadline);return d!==null&&d>=0&&d<=7;}).length;
@@ -1485,6 +1595,287 @@ function updateCountdowns(){
   });
 }
 setInterval(updateCountdowns,60000);
+
+
+// ══════════════════════════════════════════════
+// KRASSAT (متابعة الكراسات)
+// ══════════════════════════════════════════════
+let KRASSAT={reports:[],platforms:[],alerts:[],inquiries:[],daily:[]};
+
+function switchTab(prefix,tab){
+  document.querySelectorAll(`[id^="${prefix}-tab-"]`).forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll(`[onclick*="switchTab('${prefix}'"]`).forEach(btn=>btn.classList.remove('on'));
+  const pane=document.getElementById(`${prefix}-tab-${tab}`);
+  if(pane)pane.classList.add('on');
+  const btn=document.querySelector(`[onclick*="switchTab('${prefix}','${tab}')"]`);
+  if(btn)btn.classList.add('on');
+}
+
+function buildKrassat(){
+  renderKrassat();
+  renderKrassatPlatforms();
+  renderKrassatAlerts();
+  renderKrassatInquiries();
+  renderKrassatDaily();
+}
+
+function renderKrassat(){
+  const q=(document.getElementById('kr-sq')||{}).value||'';
+  const an=(document.getElementById('kr-analyst')||{}).value||'الكل';
+  const st=(document.getElementById('kr-status')||{}).value||'';
+  const rows=KRASSAT.reports.filter(r=>{
+    if(q&&!String(r.entity||'').includes(q)&&!String(r.name||'').includes(q))return false;
+    if(an!=='الكل'&&r.analyst!==an)return false;
+    if(st&&r.tech_status!==st)return false;
+    return true;
+  });
+  // KPI
+  const linked=rows.filter(r=>DATA.some(t=>(r.ref&&String(t.ref)===String(r.ref))||norm(t.entity).slice(0,15)===norm(r.entity||'').slice(0,15))).length;
+  document.getElementById('kr-kpi').innerHTML=[
+    [KRASSAT.reports.length,'إجمالي العروض',C.bl,'#e6f4ff'],
+    [rows.filter(r=>r.has_boq).length,'لديها كراسة',C.tl,'#e6faf9'],
+    [rows.filter(r=>r.has_tech).length,'عرض فني جاهز','#22c55e','#f0fdf4'],
+    [linked,'مرتبطة بمناقصة',C.gd,'#fffbeb'],
+  ].map(([v,l,col,bg])=>`<div class="kc" style="border-top-color:${col};background:${bg}"><div class="kl">${l}</div><div class="kv" style="color:${col}">${v}</div></div>`).join('');
+  // Table
+  const TECH_COL={'تم فتح المظاريف':'#22c55e','لا يوجد':'#9ca3af','تم إلغائها':'#ef4444'};
+  const linked_tender=r=>DATA.find(t=>(r.ref&&String(t.ref)===String(r.ref))||norm(t.entity).slice(0,15)===norm(r.entity||'').slice(0,15));
+  document.getElementById('kr-body').innerHTML=rows.length?rows.map((r,i)=>{
+    const t=linked_tender(r);
+    const rowBg=t?SC[getColor(t)].bg:'#fff';
+    return `<tr style="background:${rowBg};cursor:pointer" ${t?`onclick="openD(${DATA.indexOf(t)})"`:''}">
+      <td style="color:var(--mt)">${i+1}</td>
+      <td><div style="font-size:11px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px">${esc(r.entity)}</div>
+          <div style="font-size:9px;color:var(--mt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px">${esc((r.name||'').slice(0,55))}</div>
+          ${t?`<div style="font-size:8px;color:var(--bl);margin-top:2px">🔗 مرتبطة بمناقصة</div>`:''}
+      </td>
+      <td style="font-size:10px">${esc(r.analyst||'—')}</td>
+      <td style="font-size:10px;font-weight:600">${esc(r.offer_num||'—')}</td>
+      <td style="font-size:11px;font-weight:700;color:${C.gd}">${r.offer_value?sar(r.offer_value)+' ﷼':'—'}</td>
+      <td><span style="font-size:9px;font-weight:700;color:${TECH_COL[r.tech_status]||'#888'}">${esc(r.tech_status||'—')}</span></td>
+      <td><span style="font-size:9px;font-weight:700;color:${TECH_COL[r.fin_status]||'#888'}">${esc(r.fin_status||'—')}</span></td>
+      <td style="text-align:center"><span class="${r.has_boq?'bool-yes':'bool-no'}">${r.has_boq?'✓':'—'}</span></td>
+      <td style="text-align:center"><span class="${r.has_tech?'bool-yes':'bool-no'}">${r.has_tech?'✓':'—'}</span></td>
+      <td style="font-size:9px;color:var(--mt)">${esc(r.review_status||'—')}</td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--mt)">لا توجد بيانات — ارفع ملف متابعة الكراسات.xlsx</td></tr>`;
+  // Analyst filter update
+  const an_el=document.getElementById('kr-analyst');
+  if(an_el&&an_el.options.length<=1){
+    const analysts=[...new Set(KRASSAT.reports.map(r=>r.analyst).filter(Boolean))].sort();
+    analysts.forEach(v=>{const o=document.createElement('option');o.textContent=v;an_el.appendChild(o);});
+  }
+}
+
+function renderKrassatPlatforms(){
+  const el=document.getElementById('kr-platforms-grid');if(!el)return;
+  if(!KRASSAT.platforms.length){
+    el.innerHTML='<div class="card" style="text-align:center;color:var(--mt);padding:24px;grid-column:1/-1">لا توجد بيانات المنصات</div>';return;
+  }
+  const STATUS_COL={'متابعة':'#22c55e','لا يوجد':'#9ca3af','-':'#9ca3af'};
+  el.innerHTML=KRASSAT.platforms.map(p=>{
+    const note=p.notes||'';
+    const hasActivity=note&&note!=='-'&&note.length>3;
+    const col=hasActivity?'#22c55e':'#9ca3af';
+    return `<div class="card" style="border-top:3px solid ${col}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:36px;height:36px;border-radius:50%;background:${col}22;display:flex;align-items:center;justify-content:center;font-size:16px">${col==='#22c55e'?'✅':'⚪'}</div>
+        <div><div style="font-size:13px;font-weight:700">${esc(p.name)}</div><div style="font-size:9px;color:var(--mt)">${esc(p.responsible||'—')}</div></div>
+        <span style="margin-right:auto;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;background:${col}18;color:${col}">${hasActivity?'نشط':'لا يوجد'}</span>
+      </div>
+      ${p.notes?`<div style="font-size:10px;color:var(--mt);line-height:1.6;background:var(--bg);padding:8px;border-radius:7px;border:1px solid var(--bd)">${esc(p.notes)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderKrassatAlerts(){
+  const el=document.getElementById('kr-alerts-body');if(!el)return;
+  if(!KRASSAT.alerts.length){el.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--mt)">لا توجد إشعارات</td></tr>';return;}
+  el.innerHTML=KRASSAT.alerts.map((a,i)=>`
+    <tr style="background:${i%2?'#fff':'#f9fafb'}">
+      <td style="color:var(--mt)">${i+1}</td>
+      <td style="font-size:10px;font-weight:600">${esc(a.entity||'—')}</td>
+      <td style="font-size:10px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc((a.name||'').slice(0,50))}</td>
+      <td style="font-size:10px">${esc(a.deadline||'—')}</td>
+      <td><span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;background:rgba(0,154,222,.08);color:var(--bl)">${esc(a.platform||'—')}</span></td>
+      <td style="font-size:10px;color:var(--mt)">${esc(a.alert||'—')}</td>
+      <td style="font-size:10px">${esc(a.responsible||'—')}</td>
+    </tr>`).join('');
+}
+
+function renderKrassatInquiries(){
+  const el=document.getElementById('kr-inquiries-body');if(!el)return;
+  if(!KRASSAT.inquiries.length){el.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--mt)">لا توجد استفسارات</td></tr>';return;}
+  el.innerHTML=KRASSAT.inquiries.map((a,i)=>`
+    <tr style="background:${i%2?'#fff':'#f9fafb'}">
+      <td style="color:var(--mt)">${i+1}</td>
+      <td style="font-size:10px;font-weight:600">${esc(a.entity||'—')}</td>
+      <td style="font-size:10px;max-width:200px">${esc((a.name||'').slice(0,50))}</td>
+      <td style="font-size:10px">${esc(a.deadline||'—')}</td>
+      <td><span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;background:rgba(0,154,222,.08);color:var(--bl)">${esc(a.platform||'—')}</span></td>
+      <td style="font-size:10px;color:var(--mt);max-width:220px">${esc((a.inquiry||'').slice(0,80))}</td>
+      <td style="font-size:10px">${esc(a.responsible||'—')}</td>
+    </tr>`).join('');
+}
+
+function renderKrassatDaily(){
+  const el=document.getElementById('kr-daily-grid');if(!el)return;
+  if(!KRASSAT.daily.week){
+    el.innerHTML='<div class="card" style="text-align:center;color:var(--mt);padding:24px">لا توجد بيانات المهام اليومية</div>';return;
+  }
+  const {week,headers,rows}=KRASSAT.daily;
+  const TASKS=['متابعة المنصات','متابعة الايميل','تحديث الاستفسارات','تحديث الاشعارات','تحديث تقرير فتح العروض'];
+  el.innerHTML=`
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-size:12px;font-weight:700;color:var(--bl);margin-bottom:12px">📅 ${esc(week)}</div>
+      <div style="overflow-x:auto">
+        <table style="min-width:600px">
+          <thead><tr>
+            <th>اليوم</th><th>المسؤول</th>
+            ${TASKS.map(t=>`<th style="font-size:9px">${t}</th>`).join('')}
+          </tr></thead>
+          <tbody>
+            ${rows.map(r=>`<tr>
+              <td style="font-weight:600;font-size:11px">${esc(r.day)}</td>
+              <td style="font-size:10px">${esc(r.responsible)}</td>
+              ${r.tasks.map(done=>`<td style="text-align:center"><span style="font-size:13px">${done?'✅':'⬜'}</span></td>`).join('')}
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+async function handleKrassatFile(file){
+  if(!file)return;
+  const stEl=document.getElementById('kr-st');
+  stEl.textContent='⏳ جاري القراءة...';
+  try{
+    if(typeof XLSX==='undefined')throw new Error('مكتبة Excel لم تُحمَّل');
+    const buf=await file.arrayBuffer();
+    const wb=XLSX.read(buf,{type:'array',cellDates:true});
+    const g=k=>String(k==null?'':k).trim();
+    const toN=v=>{try{return parseFloat(String(v||0).replace(/[^\d.]/g,''))||0;}catch{return 0;}};
+    const toBool=v=>v===true||v===1||String(v).toUpperCase()==='TRUE';
+    // Generic header-row finder: returns index of first row containing target text
+    const findHdr=(rows,text)=>{
+      const i=rows.findIndex(r=>r.some(c=>String(c||'').includes(text)));
+      return i<0?0:i;
+    };
+    // Build a lookup fn from a header row: returns col index for first header containing key
+    const mkIdx=hdrs=>k=>hdrs.findIndex(h=>String(h||'').includes(k));
+
+    // ── تقرير فتح العروض 2026 ────────────────────────────────────────────
+    // Use header:1 (raw arrays) to avoid trailing-space key mismatches
+    const rptSheet=wb.SheetNames.find(s=>s.includes('تقرير فتح العروض'));
+    if(rptSheet){
+      const ws=wb.Sheets[rptSheet];
+      const raw=XLSX.utils.sheet_to_json(ws,{defval:'',header:1});
+      const hdrRow=findHdr(raw,'الجهة');
+      // Data rows: skip header and rows where entity col (col 2 per known structure) is blank/header text
+      KRASSAT.reports=raw.slice(hdrRow+1).filter(r=>{
+        const ent=g(r[2]);
+        return ent&&ent!=='الجهة'&&ent!=='الجهة '&&g(r[0])!=='م';
+      }).map(r=>({
+        entity   :g(r[2]),
+        name     :g(r[3]),
+        ref      :g(r[4]),
+        period   :g(r[1]),
+        platform :g(r[6]),
+        analyst  :g(r[7]),
+        offer_num:g(r[8]),
+        offer_value:toN(r[10]),
+        tech_status:g(r[11]),
+        fin_status :g(r[12]),
+        report_status:g(r[13]),
+        notes    :g(r[14]),
+        analysis :g(r[15]),
+        has_boq  :toBool(r[17]),
+        has_tech :toBool(r[18]),
+        has_report:toBool(r[19]),
+        review_status:g(r[20]),
+      })).filter(r=>r.entity);
+    }
+
+    // ── متابعة المنصات المعتمدة ──────────────────────────────────────────
+    const pltSheet=wb.SheetNames.find(s=>s.includes('المنصات المعتمدة'));
+    if(pltSheet){
+      const ws=wb.Sheets[pltSheet];
+      const rows=XLSX.utils.sheet_to_json(ws,{defval:'',header:1});
+      const hdr=findHdr(rows,'اسم المنصة');
+      KRASSAT.platforms=rows.slice(hdr+1).filter(r=>g(r[1])).map(r=>({
+        num:r[0],name:g(r[1]),notes:g(r[3]),responsible:g(r[4])
+      })).filter(r=>r.name&&!r.name.includes('اسم المنصة'));
+    }
+
+    // ── الاشعارات ────────────────────────────────────────────────────────
+    const alrtSheet=wb.SheetNames.find(s=>s.trim().includes('الاشعارات'));
+    if(alrtSheet){
+      const ws=wb.Sheets[alrtSheet];
+      const raw=XLSX.utils.sheet_to_json(ws,{defval:'',header:1});
+      const hdr=findHdr(raw,'اسم الجهة');
+      const idx=mkIdx(raw[hdr]||[]);
+      KRASSAT.alerts=raw.slice(hdr+1).filter(r=>g(r[idx('اسم الجهة')]||r[0])).map(r=>({
+        entity     :g(r[idx('اسم الجهة')]   ||r[0]),
+        name       :g(r[idx('اسم المناقصة')]||r[idx('المشروع')]||r[1]),
+        ref        :g(r[idx('الرقم المرجعي')]||r[2]),
+        deadline   :g(r[idx('تاريخ')]        ||r[3]),
+        platform   :g(r[idx('المنصة')]        ||r[4]),
+        alert      :g(r[idx('الإشعارات')]    ||r[idx('حالة')]||r[5]),
+        responsible:g(r[idx('المسؤول')]      ||r[6]),
+      })).filter(r=>r.entity&&!r.entity.includes('اسم الجهة'));
+    }
+
+    // ── الاستفسارات ──────────────────────────────────────────────────────
+    const inqSheet=wb.SheetNames.find(s=>s.trim().includes('الاستفسارات'));
+    if(inqSheet){
+      const ws=wb.Sheets[inqSheet];
+      const raw=XLSX.utils.sheet_to_json(ws,{defval:'',header:1});
+      const hdr=findHdr(raw,'اسم الجهة');
+      const idx=mkIdx(raw[hdr]||[]);
+      KRASSAT.inquiries=raw.slice(hdr+1).filter(r=>g(r[idx('اسم الجهة')]||r[0])).map(r=>({
+        entity     :g(r[idx('اسم الجهة')]      ||r[0]),
+        name       :g(r[idx('اسم المناقصة')]   ||r[idx('المشروع')]||r[1]),
+        ref        :g(r[idx('الرقم المرجعي')]  ||r[2]),
+        deadline   :g(r[idx('تاريخ')]           ||r[3]),
+        platform   :g(r[idx('المنصة')]           ||r[4]),
+        inquiry    :g(r[idx('الاستفسار')]       ||r[idx('الاشتراط')]||r[5]),
+        responsible:g(r[idx('المسؤول')]         ||r[6]),
+      })).filter(r=>r.entity&&!r.entity.includes('اسم الجهة'));
+    }
+
+    // ── متابعة المهام اليومي ─────────────────────────────────────────────
+    const dailySheet=wb.SheetNames.find(s=>s.includes('المهام اليوم'));
+    if(dailySheet){
+      const ws=wb.Sheets[dailySheet];
+      const raw=XLSX.utils.sheet_to_json(ws,{defval:'',header:1});
+      const week=String(raw[1]?.[0]||'');
+      const DAYS_AR=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+      const days=raw.slice(4).filter(r=>DAYS_AR.some(d=>String(r[0]||'').includes(d)));
+      KRASSAT.daily={
+        week,
+        rows:days.map(r=>({
+          day:g(r[0]),responsible:g(r[1]),
+          tasks:[r[2],r[5],r[8],r[11],r[14]].map(v=>toBool(v)),
+        }))
+      };
+    }
+
+    buildKrassat();
+    buildDashboard();
+    renderT();
+    const total=KRASSAT.reports.length;
+    const msg=`<span style="color:var(--tl)">✓ تم تحميل ${total} سجل — ${new Date().toLocaleTimeString('ar-SA')}</span>`;
+    stEl.innerHTML=msg;
+    // also update sync page status
+    const st2=document.getElementById('st2');if(st2)st2.innerHTML=msg;
+  }catch(e){
+    console.error('handleKrassatFile error',e);
+    const err=`<span style="color:#ef4444">✗ ${e.message}</span>`;
+    stEl.innerHTML=err;
+    const st2=document.getElementById('st2');if(st2)st2.innerHTML=err;
+  }
+}
 
 window.addEventListener('load',init);
 </script>
