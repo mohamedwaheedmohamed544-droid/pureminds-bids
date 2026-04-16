@@ -136,12 +136,91 @@ input[type=text]{flex:1;min-width:180px}
 .fbtn{padding:9px 18px;background:var(--bl);color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
 .fbtn:hover{background:#007ab8}
 .sbtn{padding:8px 14px;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+
+/* ── TASKS PAGE ── */
+.task-card{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:16px 18px;margin-bottom:10px;border-right:4px solid var(--bd);transition:box-shadow .15s}
+.task-card:hover{box-shadow:0 4px 14px rgba(0,0,0,.09)}
+.link-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;padding:12px;background:var(--bg);border-radius:8px;border:1px solid var(--bd)}
+.link-edit-row{display:flex;align-items:center;gap:8px}
+.link-edit-row label{font-size:9px;color:var(--mt);font-weight:700;min-width:95px;flex-shrink:0;text-align:right}
+.link-edit-row input{flex:1;padding:6px 10px;font-size:10px;border:1px solid var(--bd);border-radius:6px;font-family:inherit}
+.link-edit-row input:focus{border-color:var(--bl);outline:none}
+.edit-toggle{padding:5px 12px;background:rgba(0,154,222,.08);color:var(--bl);border:1px solid rgba(0,154,222,.3);border-radius:6px;font-size:10px;cursor:pointer;font-weight:700;font-family:inherit;transition:all .15s}
+.edit-toggle:hover{background:rgba(0,154,222,.18)}
+
+/* ── DARK MODE ── */
+body.dark{--bg:#0f172a;--wh:#1e293b;--nv:#f1f5f9;--mt:#94a3b8;--bd:#334155;color:#f1f5f9}
+body.dark .sb{background:#020617;border-left:1px solid #1e293b}
+body.dark .card,body.dark .ac,body.dark .task-card{background:#1e293b;border-color:#334155;color:#f1f5f9}
+body.dark table{color:#f1f5f9}
+body.dark th{background:#0f172a;color:#94a3b8;border-color:#334155}
+body.dark td{border-color:#1e293b}
+body.dark .tr:hover{filter:brightness(1.15)}
+body.dark .tr.c-green{background:#052e16}
+body.dark .tr.c-blue{background:#172554}
+body.dark .tr.c-red{background:#450a0a}
+body.dark .tr.c-gray{background:#1e293b}
+body.dark input,body.dark select{background:#0f172a;border-color:#334155;color:#f1f5f9}
+body.dark .legend-bar{background:#1e293b;border-color:#334155}
+body.dark .dband{background:#020617}
+body.dark .kc{border-color:#334155}
+body.dark .fin-no-offer{background:#1e293b;border-color:#334155}
+body.dark .uzone{background:rgba(0,154,222,.1);border-color:var(--bl)}
+body.dark .link-edit-grid{background:#0f172a;border-color:#334155}
+body.dark .link-edit-row input{background:#0f172a}
+.dark-btn{width:100%;padding:9px 14px;border:none;background:transparent;color:rgba(255,255,255,.35);cursor:pointer;font-size:11px;text-align:right;font-family:inherit;display:flex;align-items:center;gap:9px;transition:all .15s;margin-top:2px}
+.dark-btn:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.8)}
+.dark-btn .ni{width:16px;text-align:center;font-size:13px}
+
+/* ── MOBILE SIDEBAR ── */
+.mob-toggle{display:none;position:fixed;top:12px;left:12px;z-index:200;background:var(--nv);color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+@media(max-width:768px){
+  .mob-toggle{display:block}
+  .sb{transform:translateX(100%);transition:transform .25s}
+  .sb.open{transform:translateX(0)}
+  .main{margin-right:0;padding:14px 12px}
+  .kg{grid-template-columns:repeat(2,1fr)!important}
+  .g2,.g3,.g4{grid-template-columns:1fr!important}
+  .link-edit-grid{grid-template-columns:1fr!important}
+}
+
+/* ── BULK ACTION BAR ── */
+.bulk-bar{display:none;background:var(--bl);color:#fff;border-radius:10px;padding:10px 16px;margin-bottom:12px;align-items:center;gap:12px;flex-wrap:wrap}
+.bulk-bar.on{display:flex}
+.bulk-bar select{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:5px 10px;font-size:11px;font-family:inherit}
+.bulk-bar select option{background:#001c38;color:#fff}
+.bulk-bar button{padding:6px 14px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit}
+.bulk-bar button:hover{background:rgba(255,255,255,.28)}
+.cb-col{width:32px!important}
+input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:var(--bl)}
+
+/* ── EXPORT BUTTON ── */
+.xbtn{padding:7px 14px;background:rgba(34,197,94,.1);color:#166534;border:1px solid #22c55e;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
+.xbtn:hover{background:#22c55e;color:#fff}
+
+/* ── DATE FILTER ROW ── */
+input[type=date]{color-scheme:light;min-width:130px}
+body.dark input[type=date]{color-scheme:dark}
+#date-range-lbl{transition:opacity .2s}
+
+/* ── COUNTDOWN ── */
+.cd-live{font-variant-numeric:tabular-nums;font-family:monospace}
+
+/* ── PRINT ── */
+@media print{
+  .sb,.mob-toggle,.sr,.bulk-bar,.bk,.edit-toggle,.fbtn,.sbtn,.sbtn,.auto-btn,.xbtn,.dark-btn{display:none!important}
+  .main{margin-right:0;padding:0}
+  .page{display:block!important}
+  .card{break-inside:avoid;box-shadow:none;border:1px solid #ccc}
+  body{font-size:11px}
+}
 </style>
 </head>
 <body>
 
 <!-- SIDEBAR -->
-<aside class="sb">
+<button class="mob-toggle" onclick="toggleSidebar()">☰</button>
+<aside class="sb" id="main-sb">
   <div class="logo">
     <div class="brand">PURE<span>MINDS</span></div>
     <div class="brand-sub">Business Development · 2026</div>
@@ -160,9 +239,11 @@ input[type=text]{flex:1;min-width:180px}
   <button class="nb" onclick="go('timeline')"><span class="ni">📅</span>الجدول الزمني</button>
   <div class="sb-sec">الفريق</div>
   <button class="nb" onclick="go('analysts')"><span class="ni">👥</span>أداء المحللين</button>
+  <button class="nb" onclick="go('tasks')"><span class="ni">✅</span>مهام الفريق<span class="nbd" id="tasks-badge" style="display:none">0</span></button>
   <div class="sb-sec">البيانات</div>
   <button class="nb" onclick="go('sync')"><span class="ni">⟳</span>تحديث البيانات</button>
   <div style="flex:1"></div>
+  <button class="dark-btn" onclick="toggleDark()" id="dark-btn"><span class="ni">🌙</span><span id="dark-lbl">الوضع الداكن</span></button>
   <div class="urg-sb" id="sb-urg" style="display:none">
     <div style="font-size:9px;color:#f87171;font-weight:700;margin-bottom:6px">🔴 تنتهي قريباً</div>
     <div id="sb-urg-l"></div>
@@ -203,8 +284,25 @@ input[type=text]{flex:1;min-width:180px}
     <div class="leg"><div class="leg-dot" style="background:var(--gray)"></div>تحت التحليل</div>
     <div class="leg"><div class="leg-dot" style="background:var(--red)"></div>غير مشارك</div>
   </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+    <div style="font-size:10px;color:var(--mt)" id="sel-count"></div>
+    <div style="display:flex;gap:8px">
+      <button class="xbtn" onclick="exportExcel()">⬇ تصدير Excel</button>
+      <button class="xbtn" style="background:rgba(59,130,246,.08);color:#1e40af;border-color:#3b82f6" onclick="window.print()">🖨 طباعة</button>
+    </div>
+  </div>
+  <div class="bulk-bar" id="bulk-bar">
+    <span id="bulk-count" style="font-weight:700;font-size:12px">0 محدد</span>
+    <span style="opacity:.6;font-size:11px">تغيير الحالة إلى:</span>
+    <select id="bulk-status">
+      <option value="">— اختر —</option>
+      <option>مشاركة</option><option>عدم المشاركة</option><option>جاري العمل</option><option>جاهز</option>
+    </select>
+    <button onclick="applyBulk()">✓ تطبيق</button>
+    <button onclick="clearSel()" style="background:rgba(255,255,255,.08)">✕ إلغاء</button>
+  </div>
   <div class="sr">
-    <input type="text" id="sq" placeholder="🔍 بحث بالاسم أو الجهة أو الرقم..." oninput="renderT()">
+    <input type="text" id="sq" placeholder="🔍 بحث بالاسم أو الجهة أو الرقم... (Ctrl+K)" oninput="renderT()">
     <select id="sa" onchange="renderT()"><option>الكل</option></select>
     <select id="sty" onchange="renderT()"><option>الكل</option></select>
     <select id="sd" onchange="renderT()"><option>الكل</option><option>مشاركة</option><option>عدم المشاركة</option><option>جاري العمل</option><option>جاهز</option></select>
@@ -216,8 +314,27 @@ input[type=text]{flex:1;min-width:180px}
       <option value="red">🔴 غير مشارك</option>
     </select>
   </div>
+  <div class="sr" style="margin-top:-6px;padding:8px 12px;background:#fff;border:1px solid var(--bd);border-radius:10px;margin-bottom:10px">
+    <span style="font-size:10px;font-weight:700;color:var(--mt);white-space:nowrap">📅 فلتر التاريخ:</span>
+    <label style="font-size:10px;color:var(--mt);white-space:nowrap">من
+      <input type="date" id="sdf" onchange="renderT()" style="margin-right:4px;padding:5px 8px;font-size:11px;min-width:130px">
+    </label>
+    <label style="font-size:10px;color:var(--mt);white-space:nowrap">إلى
+      <input type="date" id="sdt" onchange="renderT()" style="margin-right:4px;padding:5px 8px;font-size:11px;min-width:130px">
+    </label>
+    <select id="sqp" onchange="renderT()" style="min-width:130px">
+      <option value="all">كل الفترات</option>
+      <option value="today">اليوم فقط</option>
+      <option value="week">خلال 7 أيام</option>
+      <option value="month">خلال 30 يوماً</option>
+      <option value="past">منتهية</option>
+    </select>
+    <button onclick="clearDateFilter()" style="padding:5px 12px;background:rgba(239,68,68,.08);color:#ef4444;border:1px solid #fecaca;border-radius:6px;font-size:10px;cursor:pointer;font-family:inherit;font-weight:700">✕ مسح</button>
+    <span id="date-range-lbl" style="font-size:10px;color:var(--bl);font-weight:700;margin-right:auto"></span>
+  </div>
   <div class="card" style="padding:0;overflow:hidden">
     <table><thead><tr>
+      <th class="cb-col"><input type="checkbox" id="cb-all" onchange="toggleAll(this.checked)" title="تحديد الكل"></th>
       <th style="width:28px">#</th><th>المناقصة / الجهة</th>
       <th style="width:86px">المحلل</th><th style="width:56px">النوع</th>
       <th style="width:86px">الحالة</th><th style="width:95px">العرض المالي</th>
@@ -310,6 +427,42 @@ input[type=text]{flex:1;min-width:180px}
 <div id="page-analysts" class="page">
   <div class="ph"><div class="ps">TEAM PERFORMANCE</div><div class="pt">أداء المحللين</div></div>
   <div class="ag" id="a-grid"></div>
+</div>
+
+
+<!-- ══ TEAM TASKS ══ -->
+<div id="page-tasks" class="page">
+  <div class="ph"><div class="ps">TEAM TASKS</div><div class="pt">متابعة مهام الفريق</div></div>
+  <div class="kg" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px" id="tasks-kpi"></div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="sr">
+      <select id="tf-analyst" onchange="buildTasks()" style="min-width:140px"><option>الكل</option></select>
+      <select id="tf-dept" onchange="buildTasks()" style="min-width:165px">
+        <option value="الكل">كل الأقسام</option>
+        <option value="intro">مقدمة العرض الفني</option>
+        <option value="content_dept">قسم المحتوى</option>
+        <option value="digital_dept">التسويق الرقمي</option>
+        <option value="pr_dept">العلاقات العامة</option>
+        <option value="tech_dept">التقنية</option>
+        <option value="designs_atheer">تصاميم أثير</option>
+        <option value="design_dept">قسم التصميم</option>
+        <option value="events_mgmt">إدارة الفعاليات</option>
+        <option value="design_edit">تعديل تصاميم</option>
+        <option value="creative">الأفكار الإبداعية</option>
+        <option value="review">مراجعة العرض</option>
+      </select>
+      <select id="tf-status" onchange="buildTasks()" style="min-width:145px">
+        <option value="الكل">كل الحالات</option>
+        <option value="مطلوب">مطلوب</option>
+        <option value="جاري العمل">جاري العمل</option>
+        <option value="جاهز">جاهز</option>
+        <option value="معمد">معمد</option>
+        <option value="غير مطلوب">غير مطلوب</option>
+      </select>
+      <input type="text" id="tf-search" placeholder="بحث بالجهة أو المناقصة..." oninput="buildTasks()" style="min-width:200px">
+    </div>
+  </div>
+  <div id="tasks-body"></div>
 </div>
 
 <!-- ══ SYNC ══ -->
@@ -411,6 +564,51 @@ const pill=v=>{
   return `<span class="pill" style="background:${s.bg};color:${s.c};border:1px solid ${s.b}">${esc(v)||'—'}</span>`;
 };
 function lbtn(href,label,cls){if(!href)return'';return `<a href="${esc(href)}" target="_blank" class="lbtn ${cls}">${label}</a>`;}
+// ── LINK PERSISTENCE ──────────────────────────────────────
+const LINK_FIELDS=[
+  ['link_attachments','📎 المرفقات','lb'],
+  ['link_scope','📄 نطاق العمل','lt'],
+  ['link_price','💰 تحليل الأسعار','lg'],
+  ['link_report','📊 التقرير التحليلي','lo'],
+  ['link_team','👥 مهام الفريق','ln'],
+  ['link_content','✍️ قسم المحتوى','lb'],
+  ['link_digital','📱 التسويق الرقمي','lt'],
+  ['link_pr','🤝 العلاقات العامة','lg'],
+  ['link_tech','💻 التقنية','ln'],
+  ['link_atheer','🎨 تصاميم أثير','lo'],
+  ['link_design','🖌️ التصميم','lb'],
+  ['link_events','🎪 الفعاليات','lt'],
+];
+function getLinkKey(t){return'pm_lnk_'+(t.ref||t.entity||'').replace(/[^\w]/g,'_').slice(0,40);}
+function getTenderLinks(t){
+  const stored=JSON.parse(localStorage.getItem(getLinkKey(t))||'{}');
+  const out={};
+  LINK_FIELDS.forEach(([f])=>{out[f]=t[f]||stored[f]||'';});
+  return out;
+}
+function saveTenderLink(idx,field,val){
+  const t=DATA[idx];if(!t)return;
+  const key=getLinkKey(t);
+  const stored=JSON.parse(localStorage.getItem(key)||'{}');
+  if(val)stored[field]=val;else delete stored[field];
+  localStorage.setItem(key,JSON.stringify(stored));
+  t[field]=val;
+  // refresh the live link buttons
+  const lnks=getTenderLinks(t);
+  const live=document.getElementById('d-link-btns');
+  if(live){
+    const arr=[];
+    LINK_FIELDS.forEach(([f,lbl,cls])=>{if(lnks[f])arr.push(lbtn(lnks[f],lbl,cls));});
+    if(t.platform==='اعتماد')arr.push('<a href="https://etimad.sa" target="_blank" class="lbtn ln">🏛️ اعتماد</a>');
+    if(t.platform==='تنافس')arr.push('<a href="https://www.tanafos.gov.sa" target="_blank" class="lbtn lt">🏆 تنافس</a>');
+    if(t.platform==='اريبا')arr.push('<a href="https://www.ariba.com" target="_blank" class="lbtn lg">🔗 اريبا</a>');
+    live.innerHTML=arr.length?arr.join(''):'<span style="font-size:11px;color:var(--mt)">لا توجد روابط — اضغط تعديل لإضافتها</span>';
+  }
+}
+function toggleLinkEdit(idx){
+  const el=document.getElementById('link-edit-panel-'+idx);
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+}
 
 // Financial lookup
 const norm=s=>String(s||'').replace(/[\s\/\-\.]/g,'').toUpperCase();
@@ -441,6 +639,7 @@ function go(id){
   if(id==='charts')buildCharts();
   if(id==='timeline')buildTimeline();
   if(id==='analysts')buildAnalysts();
+  if(id==='tasks')buildTasks();
   if(id==='sync')buildSyncStats();
   if(id==='financial')renderFin();
 }
@@ -454,8 +653,11 @@ function init(){
   document.getElementById('nb-t').textContent='المناقصات ('+DATA.length+')';
   document.getElementById('ub').textContent=DATA.filter(r=>{const d=dl(r.deadline);return d!==null&&d>=0&&d<=7;}).length;
   buildSyncStats();buildFinKPI();
+  buildTaskFilters();
+  (function(){const _p=DATA.filter(r=>['intro','content_dept','digital_dept','pr_dept','tech_dept','designs_atheer','design_dept','events_mgmt','design_edit','creative','review'].some(f=>r[f]==='مطلوب')).length;const _b=document.getElementById('tasks-badge');if(_b&&_p>0){_b.style.display='inline';_b.textContent=_p;}})();
   const saved=localStorage.getItem('pm_url');
   if(saved)document.getElementById('csvurl').value=saved;
+  setTimeout(updateCountdowns,500);
 }
 
 function buildFilters(){
@@ -501,7 +703,7 @@ function buildDashboard(){
   document.getElementById('upcoming').innerHTML=up.map(r=>{
     const d=dl(r.deadline);const sc=SC[getColor(r)];
     const tc=d<=3?'#ef4444':d<=7?C.gd:C.bl;
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bd);cursor:pointer" onclick="openD(${DATA.indexOf(r)})">
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--bd);cursor:pointer" onclick="openD(${DATA.indexOf(r)})" ${r.deadline&&d<=0?'data-deadline="'+r.deadline+(r.time?' '+r.time:'')+'"':''}>
       <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1">
         <div style="width:8px;height:8px;border-radius:50%;background:${sc.dot};flex-shrink:0"></div>
         <div style="min-width:0"><div style="font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.entity)}</div><div style="font-size:9px;color:var(--mt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc((r.name||'').slice(0,40))}</div></div>
@@ -536,14 +738,75 @@ function getFiltered(){
   const sty=document.getElementById('sty').value;
   const sd=document.getElementById('sd').value;
   const sc=document.getElementById('sc').value;
-  return DATA.filter(r=>{
+  const sdf=document.getElementById('sdf').value;   // date from
+  const sdt=document.getElementById('sdt').value;   // date to
+  const sqp=document.getElementById('sqp').value;   // quick period
+
+  const dfFrom=sdf?new Date(sdf):null;
+  const dfTo=sdt?new Date(sdt+'T23:59:59'):null;
+
+  const rows=DATA.filter(r=>{
     if(q&&!r.name?.includes(q)&&!r.entity?.includes(q)&&!r.ref?.includes(q))return false;
     if(sa!=='الكل'&&r.analyst!==sa)return false;
     if(sty!=='الكل'&&r.type!==sty)return false;
     if(sd!=='الكل'&&r.decision!==sd)return false;
     if(sc&&getColor(r)!==sc)return false;
+    // date range filter
+    if(dfFrom||dfTo){
+      if(!r.deadline)return false;
+      const rd=new Date(r.deadline);
+      if(isNaN(rd))return false;
+      if(dfFrom&&rd<dfFrom)return false;
+      if(dfTo&&rd>dfTo)return false;
+    }
+    // quick period filter
+    if(sqp&&sqp!=='all'){
+      const d=dl(r.deadline);
+      if(sqp==='today'&&d!==0)return false;
+      if(sqp==='week'&&(d===null||d<0||d>7))return false;
+      if(sqp==='month'&&(d===null||d<0||d>30))return false;
+      if(sqp==='past'&&(d===null||d>=0))return false;
+    }
     return true;
-  }).sort((a,b)=>{const da=dl(a.deadline),db=dl(b.deadline);if(da===null&&db===null)return 0;if(da===null)return 1;if(db===null)return -1;return da-db;});
+  });
+
+  // Always sort: active deadlines first (nearest→farthest), then expired, then no date
+  rows.sort((a,b)=>{
+    const da=dl(a.deadline),db=dl(b.deadline);
+    // Both have future/today deadlines → nearest first
+    if(da!==null&&da>=0&&db!==null&&db>=0)return da-db;
+    // One has future deadline → it goes first
+    if(da!==null&&da>=0)return -1;
+    if(db!==null&&db>=0)return 1;
+    // Both expired → most recent expiry first (smallest negative = most recent)
+    if(da!==null&&da<0&&db!==null&&db<0)return db-da;
+    if(da!==null&&da<0)return -1;
+    if(db!==null&&db<0)return 1;
+    // Both null → stable
+    return 0;
+  });
+
+  // Update label
+  const lbl=document.getElementById('date-range-lbl');
+  if(lbl){
+    if(sdf||sdt){
+      lbl.textContent=`${rows.length} نتيجة في النطاق المحدد`;
+    } else if(sqp&&sqp!=='all'){
+      const names={today:'اليوم',week:'7 أيام',month:'30 يوم',past:'منتهية'};
+      lbl.textContent=`${rows.length} مناقصة — ${names[sqp]||''}`;
+    } else {
+      lbl.textContent='';
+    }
+  }
+  return rows;
+}
+
+function clearDateFilter(){
+  document.getElementById('sdf').value='';
+  document.getElementById('sdt').value='';
+  document.getElementById('sqp').value='all';
+  document.getElementById('date-range-lbl').textContent='';
+  renderT();
 }
 function renderT(){
   const rows=getFiltered();
@@ -555,7 +818,9 @@ function renderT(){
     const dt=d===null?'—':d<0?'مضى':d===0?'اليوم':d+'ي';
     const fin=getFin(r);
     const finTxt=fin?`<span style="font-size:9px;font-weight:700;color:#166534">${sar(fin.amount_after_discount||fin.amount_inc_tax)} ﷼</span>`:`<span style="font-size:9px;color:var(--mt)">—</span>`;
-    return `<tr class="tr c-${getColor(r)}" style="background:${sc.bg}" onclick="openD(${DATA.indexOf(r)})">
+    const ridx=DATA.indexOf(r);
+    return `<tr class="tr c-${getColor(r)}" style="background:${sc.bg}" data-idx="${ridx}" onclick="rowClick(event,${ridx})">
+      <td class="cb-col" onclick="event.stopPropagation()"><input type="checkbox" class="row-cb" data-idx="${ridx}" onchange="onCbChange()"></td>
       <td style="color:var(--mt)">${i+1}</td>
       <td><div style="display:flex;align-items:center;gap:8px">
         <div style="width:8px;height:8px;border-radius:50%;background:${sc.dot};flex-shrink:0"></div>
@@ -602,26 +867,34 @@ function openD(idx){
      ['تحليل الأسعار',t.price_analysis||'—']]
     .map(([k,v])=>`<div style="display:flex;gap:10px;margin-bottom:7px"><span style="font-size:10px;color:var(--mt);min-width:120px;flex-shrink:0;font-weight:600;padding-top:1px">${k}:</span><span style="font-size:11px;line-height:1.5">${esc(v)}</span></div>`).join('');
 
-  // Links from SharePoint
+  // Links — merged from data + localStorage, fully editable
+  const _tidx=DATA.indexOf(t);
+  const _lnks=getTenderLinks(t);
   const links=[];
-  if(t.link_attachments) links.push(lbtn(t.link_attachments,'📎 المرفقات','lb'));
-  if(t.link_scope)       links.push(lbtn(t.link_scope,'📄 نطاق العمل','lt'));
-  if(t.link_price)       links.push(lbtn(t.link_price,'💰 تحليل الأسعار','lg'));
-  if(t.link_report)      links.push(lbtn(t.link_report,'📊 التقرير التحليلي','lo'));
-  if(t.link_team)        links.push(lbtn(t.link_team,'👥 مهام الفريق','ln'));
-  if(t.link_content)     links.push(lbtn(t.link_content,'✍️ قسم المحتوى','lb'));
-  if(t.link_digital)     links.push(lbtn(t.link_digital,'📱 التسويق الرقمي','lt'));
-  if(t.link_pr)          links.push(lbtn(t.link_pr,'🤝 العلاقات العامة','lg'));
-  if(t.link_tech)        links.push(lbtn(t.link_tech,'💻 التقنية','ln'));
-  if(t.link_atheer)      links.push(lbtn(t.link_atheer,'🎨 تصاميم أثير','lo'));
-  if(t.link_design)      links.push(lbtn(t.link_design,'🖌️ التصميم','lb'));
-  if(t.link_events)      links.push(lbtn(t.link_events,'🎪 الفعاليات','lt'));
+  LINK_FIELDS.forEach(([f,lbl,cls])=>{if(_lnks[f])links.push(lbtn(_lnks[f],lbl,cls));});
   if(t.platform==='اعتماد') links.push(`<a href="https://etimad.sa" target="_blank" class="lbtn ln">🏛️ اعتماد</a>`);
   if(t.platform==='تنافس')  links.push(`<a href="https://www.tanafos.gov.sa" target="_blank" class="lbtn lt">🏆 تنافس</a>`);
   if(t.platform==='اريبا')  links.push(`<a href="https://www.ariba.com" target="_blank" class="lbtn lg">🔗 اريبا</a>`);
 
-  document.getElementById('d-links').innerHTML=`<div class="ch"><div class="ct">🔗 روابط المستندات (SharePoint)</div></div>
-    <div style="display:flex;flex-wrap:wrap">${links.length?links.join(''):'<span style="font-size:11px;color:var(--mt)">لا توجد روابط لهذه المناقصة</span>'}</div>`;
+  document.getElementById('d-links').innerHTML=`
+    <div class="ch">
+      <div class="ct">🔗 روابط المستندات (SharePoint)</div>
+      <button class="edit-toggle" onclick="toggleLinkEdit(${_tidx})">🖊 تعديل الروابط</button>
+    </div>
+    <div id="d-link-btns" style="display:flex;flex-wrap:wrap;margin-bottom:4px">
+      ${links.length?links.join(''):'<span style="font-size:11px;color:var(--mt)">لا توجد روابط — اضغط "تعديل الروابط" لإضافتها</span>'}
+    </div>
+    <div id="link-edit-panel-${_tidx}" style="display:none">
+      <div class="link-edit-grid">
+        ${LINK_FIELDS.map(([f,lbl])=>`
+          <div class="link-edit-row">
+            <label>${lbl}</label>
+            <input type="url" placeholder="https://..." value="${_lnks[f]?_lnks[f].replace(/"/g,'&quot;'):''}"
+              onchange="saveTenderLink(${_tidx},'${f}',this.value.trim())">
+          </div>`).join('')}
+      </div>
+      <div style="margin-top:8px;font-size:9px;color:var(--mt)">💾 يحفظ في المتصفح تلقائياً · لمشاركة الفريق أضف الروابط في Google Sheets</div>
+    </div>`;
 
   document.getElementById('d-notes').innerHTML=`<div class="ch"><div class="ct">📝 الملاحظات</div></div>
     <div style="font-size:11px;color:var(--nv);line-height:1.7;background:var(--bg);padding:12px;border-radius:8px;border:1px solid var(--bd)">${esc(t.notes||'لا توجد ملاحظات')}</div>
@@ -803,17 +1076,157 @@ function buildAnalysts(){
     const u7=ts.filter(r=>{const d=dl(r.deadline);return d!==null&&d>=0&&d<=7;}).length;
     const tv=ts.reduce((s,r)=>s+(r.value||0),0);
     const col=cols[ai%cols.length];
+    const winRate=ts.length>0?Math.round(counts.green/ts.length*100):0;
+    const activeRate=ts.length>0?Math.round((counts.green+counts.blue)/ts.length*100):0;
     return `<div class="ac">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--bd)">
         <div class="av" style="background:${col}22;color:${col};border:2px solid ${col}">${a[0]}</div>
-        <div><div style="font-size:13px;font-weight:700">${esc(a)}</div><div style="font-size:9px;color:var(--mt)">${ts.length} مناقصة · ${fksar(tv)}</div></div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700">${esc(a)}</div>
+          <div style="font-size:9px;color:var(--mt)">${ts.length} مناقصة · ${fksar(tv)}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:18px;font-weight:900;color:${winRate>=60?'#22c55e':winRate>=30?C.gd:'#ef4444'}">${winRate}%</div>
+          <div style="font-size:8px;color:var(--mt)">نسبة المشاركة</div>
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:9px;color:var(--mt)"><span>نشاط الفريق</span><span>${activeRate}%</span></div>
+        <div class="bt"><div class="bf" style="width:${activeRate}%;background:${col}"></div></div>
       </div>
       ${[['مشارك/مُرسل',counts.green,'#22c55e'],['جاري العمل',counts.blue,'#3b82f6'],['تحت التحليل',counts.gray,'#9ca3af'],['غير مشارك',counts.red,'#ef4444']]
-        .filter(([,v])=>v>0).map(([l,v,c])=>`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px"><div style="display:flex;align-items:center;gap:7px"><div style="width:9px;height:9px;border-radius:50%;background:${c}"></div><span style="font-size:10px">${l}</span></div><b style="color:${c};font-size:12px">${v}</b></div>`).join('')}
+        .filter(([,v])=>v>0).map(([l,v,clr])=>`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px"><div style="display:flex;align-items:center;gap:7px"><div style="width:9px;height:9px;border-radius:50%;background:${clr}"></div><span style="font-size:10px">${l}</span></div><b style="color:${clr};font-size:12px">${v}</b></div>`).join('')}
       ${u7>0?`<div style="margin-top:8px;padding:7px 10px;background:#fef2f2;border-radius:7px;font-size:9px;color:#ef4444;font-weight:700">⚡ ${u7} تنتهي خلال 7 أيام</div>`:''}
     </div>`;
   }).join('');
 }
+
+// ══════════════════════════════════════════════
+// TEAM TASKS
+// ══════════════════════════════════════════════
+const DEPTS=[
+  ['intro','مقدمة العرض الفني','link_attachments'],
+  ['content_dept','قسم المحتوى','link_content'],
+  ['digital_dept','التسويق الرقمي','link_digital'],
+  ['pr_dept','العلاقات العامة','link_pr'],
+  ['tech_dept','التقنية','link_tech'],
+  ['designs_atheer','تصاميم أثير','link_atheer'],
+  ['design_dept','قسم التصميم','link_design'],
+  ['events_mgmt','إدارة الفعاليات','link_events'],
+  ['design_edit','تعديل تصاميم',''],
+  ['creative','الأفكار الإبداعية',''],
+  ['review','مراجعة العرض',''],
+];
+
+function buildTaskFilters(){
+  const el=document.getElementById('tf-analyst');if(!el)return;
+  const cur=el.value;
+  const an=[...new Set(DATA.map(r=>r.analyst).filter(Boolean))].sort();
+  while(el.options.length>1)el.remove(1);
+  an.forEach(v=>{const o=document.createElement('option');o.textContent=v;if(v===cur)o.selected=true;el.appendChild(o);});
+}
+
+function buildTasks(){
+  buildTaskFilters();
+  const notes=JSON.parse(localStorage.getItem('pm_task_notes')||'{}');
+  const analyst=(document.getElementById('tf-analyst')||{}).value||'الكل';
+  const dept=(document.getElementById('tf-dept')||{}).value||'الكل';
+  const statusFilter=(document.getElementById('tf-status')||{}).value||'الكل';
+  const q=((document.getElementById('tf-search')||{}).value||'').trim();
+
+  const hasDept=r=>DEPTS.some(([field])=>r[field]);
+
+  const filtered=DATA.filter(r=>{
+    if(analyst!=='الكل'&&r.analyst!==analyst)return false;
+    if(q&&!String(r.entity||'').includes(q)&&!String(r.name||'').includes(q))return false;
+    return hasDept(r);
+  });
+
+  // KPI
+  let total=0,done=0,inProg=0,pending=0;
+  filtered.forEach(t=>{
+    DEPTS.forEach(([field])=>{
+      if(!t[field])return;total++;
+      const v=(t[field]||'').trim();
+      if(v==='جاهز'||v==='معمد')done++;
+      else if(v==='جاري العمل')inProg++;
+      else if(v==='مطلوب')pending++;
+    });
+  });
+  document.getElementById('tasks-kpi').innerHTML=[
+    [filtered.length,'مناقصات بمهام',C.bl,'#e6f4ff'],
+    [done,'مكتمل / معمد','#22c55e','#f0fdf4'],
+    [inProg,'جاري العمل',C.gd,'#fffbeb'],
+    [pending,'مطلوب / عاجل',C.or,'#fff8f5'],
+  ].map(([v,l,col,bg])=>`<div class="kc" style="border-top-color:${col};background:${bg}"><div class="kl">${l}</div><div class="kv" style="color:${col}">${v}</div></div>`).join('');
+
+  // Cards
+  let html='';
+  filtered.forEach(t=>{
+    const tKey=(t.ref||t.entity||'').slice(0,40);
+    const tNotes=notes[tKey]||'';
+    const sc=SC[getColor(t)];
+    const lnks=getTenderLinks(t);
+    const d=dl(t.deadline);
+    const dtc=d===null?'#94a3b8':d<0?'#94a3b8':d<=3?'#ef4444':d<=7?C.gd:C.bl;
+    const dtt=d===null?'—':d<0?'انتهى':d===0?'اليوم!':d+'ي';
+
+    const activeDepts=DEPTS.filter(([field])=>{
+      if(!t[field])return false;
+      if(dept!=='الكل'&&field!==dept)return false;
+      const v=(t[field]||'').trim();
+      if(statusFilter!=='الكل'&&v!==statusFilter)return false;
+      return true;
+    });
+    if(!activeDepts.length)return;
+
+    html+=`<div class="task-card" style="border-right-color:${sc.dot}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1;min-width:0" onclick="openD(${DATA.indexOf(t)})">
+          <div style="width:10px;height:10px;border-radius:50%;background:${sc.dot};flex-shrink:0"></div>
+          <div style="min-width:0">
+            <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(t.entity)}</div>
+            <div style="font-size:10px;color:var(--mt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc((t.name||'').slice(0,55))} · <b>${esc(t.analyst||'—')}</b></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          ${lnks.link_team?`<a href="${esc(lnks.link_team)}" target="_blank" class="lbtn ln" style="font-size:9px;padding:4px 9px">👥 مهام الفريق ↗</a>`:''}
+          <span style="font-size:10px;font-weight:700;color:${dtc};background:${dtc}1a;padding:3px 9px;border-radius:6px">${dtt}</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+        ${activeDepts.map(([field,label,linkField])=>{
+          const v=(t[field]||'').trim();
+          const col=DOTC[v]||'#888';
+          const lnk=linkField?lnks[linkField]:'';
+          return `<div style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border:1px solid ${col}44;border-radius:8px;background:${col}0e">
+            <div style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></div>
+            <span style="font-size:9px;color:var(--mt)">${label}:</span>
+            <span style="font-size:10px;font-weight:700;color:${col}">${v}</span>
+            ${lnk?`<a href="${esc(lnk)}" target="_blank" style="font-size:10px;color:${C.bl};text-decoration:none;margin-right:2px">↗</a>`:''}
+          </div>`;
+        }).join('')}
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="text" placeholder="📝 أضف ملاحظة متابعة للفريق..." value="${esc(tNotes)}"
+          onchange="saveTaskNote('${esc(tKey)}',this.value)"
+          style="flex:1;font-size:11px;padding:7px 12px;border:1px solid var(--bd);border-radius:8px;background:#fafbfd;font-family:inherit;transition:border .15s"
+          onfocus="this.style.borderColor='var(--bl)'" onblur="this.style.borderColor='var(--bd)'">
+        <span style="font-size:9px;color:var(--gray);flex-shrink:0">💾 تلقائي</span>
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('tasks-body').innerHTML=html||
+    '<div class="card" style="text-align:center;color:var(--mt);font-size:12px;padding:32px">لا توجد مهام تطابق الفلتر المحدد</div>';
+}
+
+function saveTaskNote(key,val){
+  const notes=JSON.parse(localStorage.getItem('pm_task_notes')||'{}');
+  if(val)notes[key]=val;else delete notes[key];
+  localStorage.setItem('pm_task_notes',JSON.stringify(notes));
+}
+
 
 function buildSidebarUrgent(){
   const u3=DATA.filter(r=>{const d=dl(r.deadline);return d!==null&&d>=0&&d<=3;});
@@ -871,7 +1284,13 @@ function parseCSV(text){
     if(!g(iE))return null;
     let dl=g(iD);if(dl&&!/\d{4}-\d{2}-\d{2}/.test(dl)&&dl.includes('/')){const p=dl.split('/');try{dl=`${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;}catch(e){}}
     return {entity:g(iE),type:g(iT),name:g(iN),ref:g(iR),deadline:dl,value:parseFloat(g(iV).replace(/[^\d.]/g,''))||0,
-      platform:g(iP),offer_num:g(iO),decision:g(iDec),report:g(iRep),analyst:g(iAn),notes:g(iNt),link_attachments:'',link_scope:''};
+      platform:g(iP),offer_num:g(iO),decision:g(iDec),report:g(iRep),analyst:g(iAn),notes:g(iNt),
+      link_attachments:g(idx('رابط المرفقات')),link_scope:g(idx('نطاق العمل رابط')||idx('link_scope')),
+      link_price:g(idx('رابط الأسعار')),link_report:g(idx('رابط التقرير')),
+      link_team:g(idx('رابط مهام الفريق')||idx('مهام رابط')),
+      link_content:g(idx('رابط المحتوى')),link_digital:g(idx('رابط الرقمي')),
+      link_pr:g(idx('رابط العلاقات')),link_tech:g(idx('رابط التقنية')),
+      link_atheer:g(idx('رابط أثير')),link_design:g(idx('رابط التصميم')),link_events:g(idx('رابط الفعاليات'))};
   }).filter(Boolean);
 }
 function csvSplit(line){const r=[];let c='',q=false;for(let i=0;i<line.length;i++){if(line[i]==='"'){q=!q;}else if(line[i]===','&&!q){r.push(c.replace(/^"|"$/g,'').trim());c='';}else c+=line[i];}r.push(c.replace(/^"|"$/g,'').trim());return r;}
@@ -909,7 +1328,13 @@ async function handleFile(file,type){
         return {entity:g('اسم الجهة'),type:g('نوع المنافسة'),name:g('اسم المناقصة / المشروع'),ref:g('الرقم المرجعي'),deadline,
           value:parseFloat(g('قيمة المناقصة').replace(/[^\d.]/g,''))||0,platform:g('المنصة'),
           offer_num:g('رقم العرض المالي'),decision:g('تقييم'),report:g('التقرير التحليلي'),
-          analyst:g('متابعة'),notes:g('مهمة'),link_attachments:'',link_scope:'',final_approval:r['الإعتماد النهائي']==1};
+          analyst:g('متابعة'),notes:g('مهمة'),final_approval:r['الإعتماد النهائي']==1,
+          link_attachments:g('رابط المرفقات'),link_scope:g('رابط نطاق العمل'),
+          link_price:g('رابط تحليل الأسعار'),link_report:g('رابط التقرير'),
+          link_team:g('رابط مهام الفريق'),link_content:g('رابط المحتوى'),
+          link_digital:g('رابط التسويق الرقمي'),link_pr:g('رابط العلاقات العامة'),
+          link_tech:g('رابط التقنية'),link_atheer:g('رابط أثير'),
+          link_design:g('رابط التصميم'),link_events:g('رابط الفعاليات')};
       });
       if(parsed.length>0){DATA.splice(0,DATA.length,...parsed);refresh();document.getElementById(stId).innerHTML=`<span style="color:var(--tl)">✓ تم تحميل ${parsed.length} مناقصة</span>`;}
     }
@@ -917,11 +1342,149 @@ async function handleFile(file,type){
 }
 
 function refresh(){
-  buildFilters();buildDashboard();renderT();buildUrgent();buildSidebarUrgent();buildSyncStats();
+  buildFilters();buildTaskFilters();buildDashboard();renderT();buildUrgent();buildSidebarUrgent();buildSyncStats();
   document.getElementById('sb-cnt').textContent=DATA.length+' مناقصة';
   document.getElementById('nb-t').textContent='المناقصات ('+DATA.length+')';
   document.getElementById('ub').textContent=DATA.filter(r=>{const d=dl(r.deadline);return d!==null&&d>=0&&d<=7;}).length;
 }
+
+
+// ══════════════════════════════════════════════
+// DARK MODE
+// ══════════════════════════════════════════════
+function toggleDark(){
+  const on=document.body.classList.toggle('dark');
+  localStorage.setItem('pm_dark',on?'1':'0');
+  document.getElementById('dark-lbl').textContent=on?'الوضع الفاتح':'الوضع الداكن';
+}
+(function(){
+  if(localStorage.getItem('pm_dark')==='1'){
+    document.body.classList.add('dark');
+    const lbl=document.getElementById('dark-lbl');
+    if(lbl)lbl.textContent='الوضع الفاتح';
+  }
+})();
+
+// ══════════════════════════════════════════════
+// MOBILE SIDEBAR
+// ══════════════════════════════════════════════
+function toggleSidebar(){
+  document.getElementById('main-sb').classList.toggle('open');
+}
+document.addEventListener('click',function(e){
+  const sb=document.getElementById('main-sb');
+  if(sb&&sb.classList.contains('open')&&!sb.contains(e.target)&&!e.target.classList.contains('mob-toggle')){
+    sb.classList.remove('open');
+  }
+});
+
+// ══════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════════
+document.addEventListener('keydown',function(e){
+  // Ctrl+K or / → focus search
+  if((e.ctrlKey&&e.key==='k')||(e.key==='/'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA')){
+    e.preventDefault();
+    const sq=document.getElementById('sq');
+    if(sq){go('tenders');setTimeout(()=>sq.focus(),80);}
+  }
+  // Escape → go back from detail
+  if(e.key==='Escape'){
+    const det=document.getElementById('page-detail');
+    if(det&&det.classList.contains('on'))go('tenders');
+  }
+});
+
+// ══════════════════════════════════════════════
+// ROW CLICK (open detail unless clicking checkbox)
+// ══════════════════════════════════════════════
+function rowClick(e,idx){
+  if(e.target.type==='checkbox')return;
+  openD(idx);
+}
+
+// ══════════════════════════════════════════════
+// BULK SELECTION & STATUS UPDATE
+// ══════════════════════════════════════════════
+function onCbChange(){
+  const cbs=[...document.querySelectorAll('.row-cb')];
+  const sel=cbs.filter(cb=>cb.checked);
+  const bar=document.getElementById('bulk-bar');
+  const cnt=document.getElementById('bulk-count');
+  const sc=document.getElementById('sel-count');
+  if(sel.length>0){bar.classList.add('on');}else{bar.classList.remove('on');}
+  if(cnt)cnt.textContent=sel.length+' محدد';
+  if(sc)sc.textContent=sel.length>0?sel.length+' مناقصة محددة':'';
+  const cbAll=document.getElementById('cb-all');
+  if(cbAll)cbAll.indeterminate=sel.length>0&&sel.length<cbs.length;
+}
+function toggleAll(checked){
+  document.querySelectorAll('.row-cb').forEach(cb=>cb.checked=checked);
+  onCbChange();
+}
+function clearSel(){
+  document.querySelectorAll('.row-cb').forEach(cb=>cb.checked=false);
+  const cbAll=document.getElementById('cb-all');
+  if(cbAll)cbAll.checked=false;
+  onCbChange();
+}
+function applyBulk(){
+  const newStatus=document.getElementById('bulk-status').value;
+  if(!newStatus){alert('اختر الحالة أولاً');return;}
+  const sel=[...document.querySelectorAll('.row-cb:checked')];
+  if(!sel.length)return;
+  if(!confirm(`تحديث ${sel.length} مناقصة إلى "${newStatus}"؟`))return;
+  sel.forEach(cb=>{
+    const idx=parseInt(cb.dataset.idx);
+    if(DATA[idx])DATA[idx].decision=newStatus;
+  });
+  clearSel();
+  buildDashboard();renderT();buildUrgent();buildSidebarUrgent();
+}
+
+// ══════════════════════════════════════════════
+// EXPORT TO EXCEL
+// ══════════════════════════════════════════════
+function exportExcel(){
+  if(typeof XLSX==='undefined'){alert('مكتبة Excel لم تُحمَّل');return;}
+  const rows=getFiltered();
+  const lnkFields=[['link_attachments','رابط المرفقات'],['link_scope','رابط نطاق العمل'],
+    ['link_price','رابط الأسعار'],['link_report','رابط التقرير'],['link_team','رابط مهام الفريق'],
+    ['link_content','رابط المحتوى'],['link_digital','رابط الرقمي'],['link_pr','رابط العلاقات'],
+    ['link_tech','رابط التقنية'],['link_atheer','رابط أثير'],['link_design','رابط التصميم'],['link_events','رابط الفعاليات']];
+  const data=rows.map(r=>{
+    const lnks=getTenderLinks(r);
+    const row={'اسم الجهة':r.entity,'اسم المناقصة':r.name||'','الرقم المرجعي':r.ref||'',
+      'النوع':r.type||'','المنصة':r.platform||'','تاريخ التقديم':r.deadline||'',
+      'الحالة':r.decision||'','المحلل':r.analyst||'','التقرير':r.report||'',
+      'رقم العرض المالي':r.offer_num||'','الملاحظات':r.notes||''};
+    lnkFields.forEach(([f,lbl])=>{row[lbl]=lnks[f]||'';});
+    return row;
+  });
+  const ws=XLSX.utils.json_to_sheet(data);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,'المناقصات',ws);
+  // Set column widths
+  ws['!cols']=[{wch:28},{wch:45},{wch:18},{wch:12},{wch:12},{wch:14},{wch:14},{wch:14},{wch:12},{wch:16},{wch:40}];
+  XLSX.writeFile(wb,`pureminds_export_${new Date().toISOString().slice(0,10)}.xlsx`);
+}
+
+// ══════════════════════════════════════════════
+// LIVE COUNTDOWN (updates every minute)
+// ══════════════════════════════════════════════
+function updateCountdowns(){
+  document.querySelectorAll('[data-deadline]').forEach(el=>{
+    const d=new Date(el.dataset.deadline);
+    if(isNaN(d))return;
+    const diff=d-new Date();
+    if(diff>0&&diff<86400000){
+      const h=Math.floor(diff/3600000);
+      const m=Math.floor((diff%3600000)/60000);
+      el.innerHTML=`<span class="cd-live" style="color:#ef4444;font-weight:800">${h}س ${m}د ⏱</span>`;
+    }
+  });
+}
+setInterval(updateCountdowns,60000);
 
 window.addEventListener('load',init);
 </script>
