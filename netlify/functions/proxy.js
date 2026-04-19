@@ -1,1 +1,2 @@
-netlify/functions/proxy.js
+/**
+ * PUREMINDS BD — Netlify Serverless Proxy
