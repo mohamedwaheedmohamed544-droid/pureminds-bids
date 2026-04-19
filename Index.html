@@ -571,16 +571,21 @@ body.dark input[type=date]{color-scheme:dark}
   <div class="g2">
     <div>
       <div class="card">
-        <div class="ch"><div class="ct">🔗 ربط Google Sheets / CSV</div></div>
-        <p style="font-size:11px;color:var(--mt);margin-bottom:12px;line-height:1.7">Google Sheets: File → Share → Publish to web → CSV → انسخ الرابط</p>
+        <div class="ch"><div class="ct">⚡ مزامنة تلقائية — Netlify Function</div></div>
+        <p style="font-size:11px;color:var(--mt);margin-bottom:12px;line-height:1.7">بعد نشر المشروع على Netlify، أدخل رابط الموقع لجلب البيانات تلقائياً من SharePoint بدون رفع ملفات.</p>
         <div class="url-r">
-          <input type="text" id="csvurl" placeholder="الصق رابط CSV هنا...">
-          <button class="fbtn" id="fbtn" onclick="fetchCSV()">جلب ⟳</button>
+          <input type="text" id="netlify-url" placeholder="https://your-site.netlify.app" dir="ltr">
+          <button class="fbtn" onclick="saveNetlifyURL()">💾 حفظ</button>
         </div>
         <div id="fetch-st" style="font-size:11px;margin-top:8px"></div>
-        <div style="margin-top:10px;display:flex;gap:8px">
-          <button class="sbtn" onclick="saveURL()" style="background:var(--tl);color:#fff">💾 حفظ الرابط</button>
-          <button class="sbtn" onclick="startAuto()" id="auto-btn" style="background:rgba(29,181,175,.1);color:var(--tl);border:1px solid var(--tl)">⟳ تحديث تلقائي (5 دقائق)</button>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="sbtn" onclick="fetchFromProxy('tenders')" style="background:var(--bl);color:#fff">📋 جلب المناقصات</button>
+          <button class="sbtn" onclick="fetchFromProxy('krassat')" style="background:var(--tl);color:#fff">📑 جلب الكراسات</button>
+          <button class="sbtn" onclick="fetchFromProxy('both')" style="background:var(--nv);color:#fff">⟳ جلب الكل</button>
+          <button class="sbtn" onclick="startAutoProxy()" id="auto-btn" style="background:rgba(29,181,175,.1);color:var(--tl);border:1px solid var(--tl)">⏱ تحديث تلقائي (5 دقائق)</button>
+        </div>
+        <div style="margin-top:12px;padding:10px 12px;background:#f0fdf4;border:1px solid var(--green-bd);border-radius:8px;font-size:10px;color:#166534;line-height:1.7">
+          <b>كيفية الإعداد:</b> انشر المجلد على Netlify → أضف متغيري البيئة <code>URL_TENDERS</code> و <code>URL_KRASSAT</code> في لوحة Netlify → أدخل رابط موقعك أعلاه.
         </div>
       </div>
       <div class="card">
@@ -751,8 +756,8 @@ function init(){
   buildSyncStats();
   buildTaskFilters();
   (function(){const _p=DATA.filter(r=>['intro','content_dept','digital_dept','pr_dept','tech_dept','designs_atheer','design_dept','events_mgmt','design_edit','creative','review'].some(f=>r[f]==='مطلوب')).length;const _b=document.getElementById('tasks-badge');if(_b&&_p>0){_b.style.display='inline';_b.textContent=_p;}})();
-  const saved=localStorage.getItem('pm_url');
-  if(saved)document.getElementById('csvurl').value=saved;
+  const savedNL=localStorage.getItem('pm_netlify_url');
+  if(savedNL){const el=document.getElementById('netlify-url');if(el)el.value=savedNL;}
   setTimeout(updateCountdowns,500);
 }
 
@@ -884,14 +889,14 @@ function getFiltered(){
     return true;
   });
 
-  // Sort: newest deadline first (الأحدث فالأقدم) — descending date
+  // Sort: oldest deadline first (ترتيب الشيت = تصاعدي)
   rows.sort((a,b)=>{
     const da=a.deadline?new Date(a.deadline):null;
     const db=b.deadline?new Date(b.deadline):null;
     if(!da&&!db)return 0;
     if(!da)return 1;   // no date → end
     if(!db)return -1;
-    return db-da;      // newest date first
+    return da-db;      // oldest date first
   });
 
   // Update label
@@ -1380,73 +1385,118 @@ function buildSyncStats(){
 // ══════════════════════════════════════════════
 // SYNC / UPLOAD
 // ══════════════════════════════════════════════
-async function fetchCSV(){
-  const url=document.getElementById('csvurl').value.trim();
-  if(!url){document.getElementById('fetch-st').innerHTML=`<span style="color:#ef4444">⚠ أدخل الرابط</span>`;return;}
-  document.getElementById('fbtn').disabled=true;
-  document.getElementById('fetch-st').textContent='⏳ جاري الجلب...';
+// ── Netlify Function auto-sync ─────────────────────────────────────────────
+function saveNetlifyURL(){
+  const url=document.getElementById('netlify-url').value.trim().replace(/\/$/,'');
+  if(!url){document.getElementById('fetch-st').innerHTML=`<span style="color:#ef4444">⚠ أدخل رابط Netlify أولاً</span>`;return;}
+  localStorage.setItem('pm_netlify_url',url);
+  document.getElementById('fetch-st').innerHTML=`<span style="color:var(--tl)">✓ تم حفظ الرابط</span>`;
+}
+function getNetlifyURL(){
+  return (document.getElementById('netlify-url')?.value||'').trim().replace(/\/$/,'') || localStorage.getItem('pm_netlify_url')||'';
+}
+async function fetchFromProxy(type){
+  const base=getNetlifyURL();
+  const st=document.getElementById('fetch-st');
+  if(!base){st.innerHTML=`<span style="color:#ef4444">⚠ أدخل رابط Netlify أولاً</span>`;return;}
+  st.innerHTML=`<span style="color:var(--mt)">⏳ جاري الجلب من SharePoint...</span>`;
   try{
-    let fu=url;
-    if(url.includes('docs.google.com/spreadsheets')){const m=url.match(/\/d\/([a-zA-Z0-9-_]+)/);if(m)fu=`https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv`;}
-    const res=await fetch(fu);if(!res.ok)throw new Error('HTTP '+res.status);
-    const text=await res.text();const parsed=parseCSV(text);
-    if(parsed.length>0){DATA.splice(0,DATA.length,...parsed);refresh();}
-    document.getElementById('fetch-st').innerHTML=`<span style="color:var(--tl)">✓ تم جلب ${parsed.length} مناقصة — ${new Date().toLocaleTimeString('ar-SA')}</span>`;
-  }catch(e){document.getElementById('fetch-st').innerHTML=`<span style="color:#ef4444">✗ ${e.message}</span>`;}
-  document.getElementById('fbtn').disabled=false;
+    if(type==='both'||type==='tenders'){
+      const res=await fetch(`${base}/.netlify/functions/proxy?type=tenders`);
+      if(!res.ok)throw new Error('HTTP '+res.status+' (tenders)');
+      const json=await res.json();
+      if(json.data?.length){DATA.splice(0,DATA.length,...json.data);refresh();buildCharts();}
+      if(type==='tenders'){st.innerHTML=`<span style="color:var(--tl)">✓ تم جلب ${json.data?.length||0} مناقصة — ${new Date().toLocaleTimeString('ar-SA')}</span>`;return;}
+    }
+    if(type==='both'||type==='krassat'){
+      const res2=await fetch(`${base}/.netlify/functions/proxy?type=krassat`);
+      if(!res2.ok)throw new Error('HTTP '+res2.status+' (krassat)');
+      const json2=await res2.json();
+      if(json2.data){Object.assign(KRASSAT,json2.data);buildDashboard();buildKrassat();}
+      const msg=type==='both'
+        ?`✓ تم جلب ${DATA.length} مناقصة + ${KRASSAT.reports?.length||0} كراسة — ${new Date().toLocaleTimeString('ar-SA')}`
+        :`✓ تم جلب ${KRASSAT.reports?.length||0} كراسة — ${new Date().toLocaleTimeString('ar-SA')}`;
+      st.innerHTML=`<span style="color:var(--tl)">${msg}</span>`;
+    }
+    buildSyncStats();
+  }catch(e){st.innerHTML=`<span style="color:#ef4444">✗ ${e.message}</span>`;}
 }
-function saveURL(){const url=document.getElementById('csvurl').value.trim();if(!url)return;localStorage.setItem('pm_url',url);document.getElementById('fetch-st').innerHTML=`<span style="color:var(--tl)">✓ تم حفظ الرابط</span>`;}
-function startAuto(){
-  if(autoTimer){clearInterval(autoTimer);autoTimer=null;document.getElementById('auto-btn').textContent='⟳ تحديث تلقائي (5 دقائق)';return;}
-  if(!document.getElementById('csvurl').value.trim()){alert('أدخل الرابط أولاً');return;}
-  fetchCSV();autoTimer=setInterval(fetchCSV,300000);document.getElementById('auto-btn').textContent='⏹ إيقاف التحديث التلقائي';
+function startAutoProxy(){
+  if(autoTimer){clearInterval(autoTimer);autoTimer=null;document.getElementById('auto-btn').textContent='⏱ تحديث تلقائي (5 دقائق)';return;}
+  if(!getNetlifyURL()){alert('أدخل رابط Netlify أولاً');return;}
+  fetchFromProxy('both');
+  autoTimer=setInterval(()=>fetchFromProxy('both'),300000);
+  document.getElementById('auto-btn').textContent='⏹ إيقاف التحديث التلقائي';
 }
-function parseCSV(text){
-  const lines=text.split('\n').filter(l=>l.trim());if(lines.length<2)return[];
-  const hdrs=csvSplit(lines[0]);
-  const idx=n=>hdrs.findIndex(h=>String(h||'').includes(n));
-  const iE=idx('اسم الجهة'),iT=idx('نوع المنافسة'),iN=idx('اسم المناقصة'),iR=idx('الرقم'),iD=idx('تاريخ');
-  const iV=idx('قيمة'),iP=idx('المنصة'),iO=idx('رقم العرض'),iDec=idx('تقييم'),iRep=idx('التقرير');
-  const iAn=idx('متابعة'),iNt=idx('مهمة');
-  return lines.slice(1).map(line=>{
-    const v=csvSplit(line);const g=i=>i>=0?String(v[i]||'').trim():'';
-    if(!g(iE))return null;
-    let dl=g(iD);if(dl&&!/\d{4}-\d{2}-\d{2}/.test(dl)&&dl.includes('/')){const p=dl.split('/');try{dl=`${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;}catch(e){}}
-    return {entity:g(iE),type:g(iT),name:g(iN),ref:g(iR),deadline:dl,value:parseFloat(g(iV).replace(/[^\d.]/g,''))||0,
-      platform:g(iP),offer_num:g(iO),decision:g(iDec),report:g(iRep),analyst:g(iAn),notes:g(iNt),
-      link_attachments:g(idx('رابط المرفقات')),link_scope:g(idx('نطاق العمل رابط')||idx('link_scope')),
-      link_price:g(idx('رابط الأسعار')),link_report:g(idx('رابط التقرير')),
-      link_team:g(idx('رابط مهام الفريق')||idx('مهام رابط')),
-      link_content:g(idx('رابط المحتوى')),link_digital:g(idx('رابط الرقمي')),
-      link_pr:g(idx('رابط العلاقات')),link_tech:g(idx('رابط التقنية')),
-      link_atheer:g(idx('رابط أثير')),link_design:g(idx('رابط التصميم')),link_events:g(idx('رابط الفعاليات'))};
-  }).filter(Boolean);
-}
-function csvSplit(line){const r=[];let c='',q=false;for(let i=0;i<line.length;i++){if(line[i]==='"'){q=!q;}else if(line[i]===','&&!q){r.push(c.replace(/^"|"$/g,'').trim());c='';}else c+=line[i];}r.push(c.replace(/^"|"$/g,'').trim());return r;}
 
 async function handleFile(file,type){
   if(!file)return;
-  // type='t' only (tenders); krassat handled by handleKrassatFile
   const stId='st1';
   document.getElementById(stId).textContent='⏳ جاري القراءة...';
   try{
     if(typeof XLSX==='undefined')throw new Error('مكتبة Excel لم تُحمَّل بعد');
-    const buf=await file.arrayBuffer();const wb=XLSX.read(buf,{cellDates:true});const ws=wb.Sheets[wb.SheetNames[0]];
-    const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
-    const parsed=rows.filter(r=>r['اسم الجهة']&&String(r['اسم الجهة']).trim()).map(r=>{
-      const g=k=>String(r[k]||'').trim();
-      let deadline='';try{const dv=r['تاريخ تقديم العروض'];if(dv instanceof Date)deadline=dv.toISOString().slice(0,10);else if(typeof dv==='number')deadline=new Date((dv-25569)*864e5).toISOString().slice(0,10);else if(dv)deadline=String(dv).slice(0,10);}catch(e){}
-      return {entity:g('اسم الجهة'),type:g('نوع المنافسة'),name:g('اسم المناقصة / المشروع'),ref:g('الرقم المرجعي'),deadline,
-        value:parseFloat(g('قيمة المناقصة').replace(/[^\d.]/g,''))||0,platform:g('المنصة'),
-        offer_num:g('رقم العرض المالي'),decision:g('تقييم'),report:g('التقرير التحليلي'),
-        analyst:g('متابعة'),notes:g('مهمة'),final_approval:r['الإعتماد النهائي']==1,
-        link_attachments:g('رابط المرفقات'),link_scope:g('رابط نطاق العمل'),
-        link_price:g('رابط تحليل الأسعار'),link_report:g('رابط التقرير'),
-        link_team:g('رابط مهام الفريق'),link_content:g('رابط المحتوى'),
-        link_digital:g('رابط التسويق الرقمي'),link_pr:g('رابط العلاقات العامة'),
-        link_tech:g('رابط التقنية'),link_design:g('رابط التصميم'),link_events:g('رابط الفعاليات')};
-    });
+    const buf=await file.arrayBuffer();
+    const wb=XLSX.read(buf,{cellDates:true,cellStyles:true});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    const raw=XLSX.utils.sheet_to_json(ws,{defval:'',header:1});
+
+    const gv=v=>(v==null?'':String(v).trim());
+    const hdr=(raw[0]||[]).map(h=>gv(h));
+    const idx=name=>hdr.findIndex(h=>h.includes(name));
+
+    // Core columns
+    const iE=idx('اسم الجهة'),iT=idx('نوع المنافسة'),iN=idx('اسم المناقصة'),iR=idx('الرقم المرجعي');
+    const iD=idx('تاريخ تقديم'),iTm=idx('اخر وقت'),iV=idx('قيمة المناقصة'),iP=idx('المنصة');
+    const iO=idx('رقم العرض المالي'),iDec=idx('تقييم'),iRep=idx('التقرير التحليلي'),iAn=idx('متابعة');
+    const iNt=idx('مهمة'),iPrc=idx('تحليل الأسعار'),iPrc2=idx('تحليل الاسعار تندرز');
+    const iCtc=idx('التواصل'),iFin=idx('الإعتماد النهائي'),iTF=idx('متابعة مهام الفريق');
+    // Dept statuses
+    const iIntr=idx('مقدمة العرض الفني'),iCnt=idx('قسم المحتوى'),iDig=idx('قسم التسويق');
+    const iPR=idx('قسم العلاقات العامة'),iTech=idx('التقنية'),iAth=idx('تصاميم أثير');
+    const iDes=idx('قسم التصميم'),iEv=idx('إدارة الفعاليات'),iDE=idx('تعديل تصاميم');
+    const iCr=idx('تصميم الافكار'),iRev=idx('مراجعة العرض');
+    // Link columns (same col as text — XLSX stores hyperlink separately)
+    const iLA=idx('المرفقات'),iLS=idx('نطاق العمل');
+    const iLT=iTF>=0?iTF:idx('مهام الفريق');
+    const iLC=iCnt,iLD=iDig,iLP=idx('قسم العلاقات'),iLTe=iTech,iLDes=iDes,iLEv=iEv;
+
+    // Helper: get hyperlink target from cell (fallback to cell value if it's a URL)
+    const fixLnk=u=>{if(!u)return '';if(u.startsWith('http'))return u;return 'https://puremindss-my.sharepoint.com/'+u.replace(/^(\.\.\/)+/,'');};
+    const getLnk=(r,c)=>{if(c<0)return '';const addr=XLSX.utils.encode_cell({r,c});const lnk=ws[addr]?.l?.Target||'';if(lnk)return fixLnk(lnk);const val=gv(raw[r]?.[c]);return val.startsWith('http')?val:'';};
+
+    const parsed=raw.slice(1).map((row,ri)=>{
+      const entity=gv(row[iE]);if(!entity)return null;
+      let deadline='';const dv=row[iD];
+      if(dv instanceof Date)deadline=dv.toISOString().slice(0,10);
+      else if(typeof dv==='number')deadline=new Date((dv-25569)*864e5).toISOString().slice(0,10);
+      else if(dv)deadline=String(dv).slice(0,10);
+      let time='';const tv=row[iTm];
+      if(tv instanceof Date)time=tv.toTimeString().slice(0,5);
+      else if(typeof tv==='string')time=tv.slice(0,5);
+      const excelRow=ri+1;
+      return {
+        entity,type:gv(row[iT]),name:gv(row[iN]),ref:gv(row[iR]),deadline,time,
+        value:parseFloat(String(row[iV]||0).replace(/[^\d.]/g,''))||0,
+        platform:gv(row[iP]),offer_num:gv(row[iO]),decision:gv(row[iDec]),
+        report:gv(row[iRep]),analyst:gv(row[iAn]),notes:gv(row[iNt]),
+        price_analysis:gv(row[iPrc])||gv(row[iPrc2]),contact:gv(row[iCtc]),
+        final_approval:row[iFin]===true||row[iFin]===1,team_followup:gv(row[iTF]),
+        // Dept statuses
+        intro:gv(row[iIntr]),content_dept:gv(row[iCnt]),digital_dept:gv(row[iDig]),
+        pr_dept:gv(row[iPR]),tech_dept:gv(row[iTech]),designs_atheer:gv(row[iAth]),
+        design_dept:gv(row[iDes]),events_mgmt:gv(row[iEv]),design_edit:gv(row[iDE]),
+        creative:gv(row[iCr]),review:gv(row[iRev]),
+        // Hyperlinks
+        link_attachments:getLnk(excelRow,iLA),link_scope:getLnk(excelRow,iLS),
+        link_price:getLnk(excelRow,iPrc>=0?iPrc:iPrc2),link_report:getLnk(excelRow,iRep>=0?iRep:-1),
+        link_team:getLnk(excelRow,iLT),link_content:getLnk(excelRow,iLC),
+        link_digital:getLnk(excelRow,iLD),link_pr:getLnk(excelRow,iLP),
+        link_tech:getLnk(excelRow,iLTe),link_design:getLnk(excelRow,iLDes),
+        link_events:getLnk(excelRow,iLEv)
+      };
+    }).filter(Boolean);
     if(parsed.length>0){DATA.splice(0,DATA.length,...parsed);refresh();buildCharts();document.getElementById(stId).innerHTML=`<span style="color:var(--tl)">✓ تم تحميل ${parsed.length} مناقصة — ${new Date().toLocaleTimeString('ar-SA')}</span>`;}
+    else document.getElementById(stId).innerHTML=`<span style="color:#ef4444">✗ لم يُعثر على بيانات في الملف</span>`;
   }catch(e){document.getElementById(stId).innerHTML=`<span style="color:#ef4444">✗ ${e.message}</span>`;}
 }
 
