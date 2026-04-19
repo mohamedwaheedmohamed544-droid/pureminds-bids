@@ -37,18 +37,41 @@ function getCellLink(ws, r, c) {
 
 // ── Fetch the Excel binary from SharePoint ────────────────────────────────
 async function fetchExcel(shareUrl) {
-  // Append &download=1 so SharePoint sends the raw file
-  const downloadUrl = shareUrl.includes('?')
-    ? shareUrl + '&download=1'
-    : shareUrl + '?download=1';
+  // Method 1: OneDrive Shares API — works for "Anyone with the link" without auth
+  try {
+    const b64 = Buffer.from(shareUrl)
+      .toString('base64')
+      .replace(/=/g, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
+    const apiUrl = `https://api.onedrive.com/v1.0/shares/u!${b64}/root/content`;
+    const r1 = await fetch(apiUrl, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if (r1.ok) {
+      const buf = await r1.arrayBuffer();
+      return Buffer.from(buf);
+    }
+  } catch (_) {}
 
-  const res = await fetch(downloadUrl, {
-    redirect : 'follow',
-    headers  : { 'User-Agent': 'Mozilla/5.0' },
-  });
+  // Method 2: Graph API (same base64 trick, different endpoint)
+  try {
+    const b64 = Buffer.from(shareUrl)
+      .toString('base64')
+      .replace(/=/g, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
+    const apiUrl = `https://graph.microsoft.com/v1.0/shares/u!${b64}/driveItem/content`;
+    const r2 = await fetch(apiUrl, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if (r2.ok) {
+      const buf = await r2.arrayBuffer();
+      return Buffer.from(buf);
+    }
+  } catch (_) {}
 
-  if (!res.ok) throw new Error(`SharePoint HTTP ${res.status}`);
-  const buf = await res.arrayBuffer();
+  // Method 3: Direct &download=1 fallback
+  const downloadUrl = shareUrl.includes('?') ? shareUrl + '&download=1' : shareUrl + '?download=1';
+  const r3 = await fetch(downloadUrl, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0' } });
+  if (!r3.ok) throw new Error(`SharePoint HTTP ${r3.status} — file may require authentication`);
+  const buf = await r3.arrayBuffer();
   return Buffer.from(buf);
 }
 
