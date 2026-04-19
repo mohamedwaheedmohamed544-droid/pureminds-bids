@@ -37,42 +37,66 @@ function getCellLink(ws, r, c) {
 
 // ── Fetch the Excel binary from SharePoint ────────────────────────────────
 async function fetchExcel(shareUrl) {
-  // Method 1: OneDrive Shares API — works for "Anyone with the link" without auth
+  const b64 = Buffer.from(shareUrl)
+    .toString('base64')
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+
+  // Method 1: SharePoint REST API → get @microsoft.graph.downloadUrl (CDN link, no auth needed)
   try {
-    const b64 = Buffer.from(shareUrl)
-      .toString('base64')
-      .replace(/=/g, '')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_');
-    const apiUrl = `https://api.onedrive.com/v1.0/shares/u!${b64}/root/content`;
-    const r1 = await fetch(apiUrl, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0' } });
-    if (r1.ok) {
-      const buf = await r1.arrayBuffer();
-      return Buffer.from(buf);
+    const tenant = shareUrl.match(/https:\/\/([^\/]+)/)?.[1];
+    if (tenant) {
+      const metaUrl = `https://${tenant}/_api/v2.0/shares/u!${b64}/root?$select=@microsoft.graph.downloadUrl`;
+      const metaRes = await fetch(metaUrl, {
+        redirect: 'follow',
+        headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' },
+      });
+      if (metaRes.ok) {
+        const meta = await metaRes.json();
+        const dlUrl = meta['@microsoft.graph.downloadUrl'];
+        if (dlUrl) {
+          const fileRes = await fetch(dlUrl, { redirect: 'follow' });
+          if (fileRes.ok) return Buffer.from(await fileRes.arrayBuffer());
+        }
+      }
     }
   } catch (_) {}
 
-  // Method 2: Graph API (same base64 trick, different endpoint)
+  // Method 2: Microsoft Graph API shares endpoint
   try {
-    const b64 = Buffer.from(shareUrl)
-      .toString('base64')
-      .replace(/=/g, '')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_');
-    const apiUrl = `https://graph.microsoft.com/v1.0/shares/u!${b64}/driveItem/content`;
-    const r2 = await fetch(apiUrl, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0' } });
-    if (r2.ok) {
-      const buf = await r2.arrayBuffer();
-      return Buffer.from(buf);
+    const metaUrl = `https://graph.microsoft.com/v1.0/shares/u!${b64}/driveItem?$select=@microsoft.graph.downloadUrl`;
+    const metaRes = await fetch(metaUrl, {
+      redirect: 'follow',
+      headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' },
+    });
+    if (metaRes.ok) {
+      const meta = await metaRes.json();
+      const dlUrl = meta['@microsoft.graph.downloadUrl'];
+      if (dlUrl) {
+        const fileRes = await fetch(dlUrl, { redirect: 'follow' });
+        if (fileRes.ok) return Buffer.from(await fileRes.arrayBuffer());
+      }
     }
   } catch (_) {}
 
-  // Method 3: Direct &download=1 fallback
-  const downloadUrl = shareUrl.includes('?') ? shareUrl + '&download=1' : shareUrl + '?download=1';
-  const r3 = await fetch(downloadUrl, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0' } });
-  if (!r3.ok) throw new Error(`SharePoint HTTP ${r3.status} — file may require authentication`);
-  const buf = await r3.arrayBuffer();
-  return Buffer.from(buf);
+  // Method 3: OneDrive consumer API
+  try {
+    const r = await fetch(`https://api.onedrive.com/v1.0/shares/u!${b64}/root/content`, {
+      redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0' },
+    });
+    if (r.ok) return Buffer.from(await r.arrayBuffer());
+  } catch (_) {}
+
+  // Method 4: Direct &download=1 (last resort)
+  const dlUrl = shareUrl.includes('?') ? shareUrl + '&download=1' : shareUrl + '?download=1';
+  const r4 = await fetch(dlUrl, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0' } });
+  if (!r4.ok) throw new Error(`SharePoint HTTP ${r4.status}`);
+  const finalBuf = await r4.arrayBuffer();
+  // Reject if response is HTML (means login redirect)
+  const ct = r4.headers.get('content-type') || '';
+  if (ct.includes('text/html')) throw new Error('SharePoint returned a login page — the file may not be publicly accessible');
+  return Buffer.from(finalBuf);
 }
 
 // ── Parse منافسات 2026 ────────────────────────────────────────────────────
